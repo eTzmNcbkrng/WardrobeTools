@@ -1,0 +1,8 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<!-- Stripped down sUI -->
+	<Script file="sUI.lua" />
+
+	<!-- Wardrobe Module -->
+	<Include file="wardrobe\load_wardrobe.xml" />
+</Ui>

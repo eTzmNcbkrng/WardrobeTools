@@ -1,0 +1,12 @@
+## Interface: 70000
+## Title: WardrobeTools
+## Notes: Quickly soulbind items for collecting their appearance and mail them to other characters
+## SavedVariables: WardrobeToolsADB
+## SavedVariablesPerCharacter: WardrobeToolsCDB
+## Version: 0.9.9
+
+## OptionalDeps: sUI
+## X-SezzADB: WardrobeToolsADB
+## X-SezzCDB: WardrobeToolsCDB
+
+loader.xml
