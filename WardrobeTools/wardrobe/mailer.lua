@@ -102,6 +102,39 @@ local balefulArmorTokens = {
 	[102267] = LE_ITEM_ARMOR_PLATE,
 	[102264] = LE_ITEM_ARMOR_PLATE,
 	[102320] = LE_ITEM_ARMOR_PLATE,
+		-- Unsullied
+	[152734] = LE_ITEM_ARMOR_CLOTH,
+	[152738] = LE_ITEM_ARMOR_CLOTH,
+	[152742] = LE_ITEM_ARMOR_CLOTH,
+	[153135] = LE_ITEM_ARMOR_CLOTH,
+	[153141] = LE_ITEM_ARMOR_CLOTH,
+	[153144] = LE_ITEM_ARMOR_CLOTH,
+	[153154] = LE_ITEM_ARMOR_CLOTH,
+	[153156] = LE_ITEM_ARMOR_CLOTH,
+	[152737] = LE_ITEM_ARMOR_LEATHER,
+	[153136] = LE_ITEM_ARMOR_LEATHER,
+	[153139] = LE_ITEM_ARMOR_LEATHER,
+	[153142] = LE_ITEM_ARMOR_LEATHER,
+	[153145] = LE_ITEM_ARMOR_LEATHER,
+	[153148] = LE_ITEM_ARMOR_LEATHER,
+	[152739] = LE_ITEM_ARMOR_LEATHER,
+	[153151] = LE_ITEM_ARMOR_LEATHER,
+	[152741] = LE_ITEM_ARMOR_MAIL,
+	[152744] = LE_ITEM_ARMOR_MAIL,
+	[153137] = LE_ITEM_ARMOR_MAIL,
+	[153138] = LE_ITEM_ARMOR_MAIL,
+	[153147] = LE_ITEM_ARMOR_MAIL,
+	[153149] = LE_ITEM_ARMOR_MAIL,
+	[153152] = LE_ITEM_ARMOR_MAIL,
+	[153158] = LE_ITEM_ARMOR_MAIL,
+	[152743] = LE_ITEM_ARMOR_PLATE,
+	[153140] = LE_ITEM_ARMOR_PLATE,
+	[153143] = LE_ITEM_ARMOR_PLATE,
+	[153146] = LE_ITEM_ARMOR_PLATE,
+	[153150] = LE_ITEM_ARMOR_PLATE,
+	[153153] = LE_ITEM_ARMOR_PLATE,
+	[153155] = LE_ITEM_ARMOR_PLATE,
+	[153157] = LE_ITEM_ARMOR_PLATE,
 };
 
 -----------------------------------------------------------------------------
@@ -521,9 +554,14 @@ addon.QueueMails = function(self, displayOnly)
 				local name, _, quality, _, _, _, _, _, equipSlot, _, _, itemClassID, itemSubClassID = GetItemInfo(itemID);
 
 				if (name) then
+					if (includeBalefulArmorTokens and string.find(name, "Unsullied")) then
+						itemSubClassID = balefulArmorTokens[itemID]
+						itemClassID = LE_ITEM_CLASS_ARMOR
+					end
+
 					if (includeBalefulArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and balefulArmorTokens[itemID]) then
 						itemSubClassID = balefulArmorTokens[itemID];
-					end
+					end					
 
 					local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][itemClassID] and self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID]) or nil);
 
