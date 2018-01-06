@@ -29,10 +29,10 @@ local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, Pick
 local ATTACHMENTS_MAX_SEND, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_GUNS, LE_ITEM_ARMOR_SHIELD, LE_ITEM_ARMOR_GENERIC, INVTYPE_RANGED, INVTYPE_HOLDABLE = ATTACHMENTS_MAX_SEND, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_GUNS, LE_ITEM_ARMOR_SHIELD, LE_ITEM_ARMOR_GENERIC, INVTYPE_RANGED, INVTYPE_HOLDABLE;
 
 -----------------------------------------------------------------------------
--- Baleful armor tokens
+-- BoA armor tokens
 -----------------------------------------------------------------------------
 
-local balefulArmorTokens = {
+local BoAArmorTokens = {
 	[127777] = LE_ITEM_ARMOR_CLOTH,
 	[127778] = LE_ITEM_ARMOR_CLOTH,
 	[127779] = LE_ITEM_ARMOR_CLOTH,
@@ -311,7 +311,7 @@ local CreateSettingsFrame = function()
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL);
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
 	CreateSettingsCheckBox("sendAllBoEs", "Also mail acquired appearances");
-	CreateSettingsCheckBox("includeBalefulArmor", "Include Baleful Armor Tokens");
+	CreateSettingsCheckBox("includeBoAArmorTokens", "Include BoA Armor Tokens");
 
 	-- Weapons
 	CreateSettingsHeader(LE_ITEM_CLASS_WEAPON);
@@ -544,7 +544,7 @@ addon.queue = {};
 addon.QueueMails = function(self, displayOnly)
 	local queue = (displayOnly and {} or self.queue);
 	local sendAllBoEs = addon.ADB.recipients[S.myRealm].sendAllBoEs;
-	local includeBalefulArmorTokens = addon.ADB.recipients[S.myRealm].includeBalefulArmor;
+	local includeBoAArmorTokens = addon.ADB.recipients[S.myRealm].includeBoAArmorTokens;
 
 	-- iterate through bags and build mailing queue
 	local bag, slot;
@@ -556,20 +556,20 @@ addon.QueueMails = function(self, displayOnly)
 				local name, _, quality, _, _, _, _, _, equipSlot, _, _, itemClassID, itemSubClassID = GetItemInfo(itemID);
 
 				if (name) then
-					if (includeBalefulArmorTokens and string.find(name, "Unsullied")) then
-						itemSubClassID = balefulArmorTokens[itemID]
+					if (includeBoAArmorTokens and string.find(name, "Unsullied")) then
+						itemSubClassID = BoAArmorTokens[itemID]
 						itemClassID = LE_ITEM_CLASS_ARMOR
 					end
 
-					if (includeBalefulArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and balefulArmorTokens[itemID]) then
-						itemSubClassID = balefulArmorTokens[itemID];
+					if (includeBoAArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and BoAArmorTokens[itemID]) then
+						itemSubClassID = BoAArmorTokens[itemID];
 					end					
 
 					local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][itemClassID] and self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID]) or nil);
 
 					if (quality >= 2 and recipient and recipient ~= myName and recipient ~= myNameFull
 						and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
-						and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBalefulArmorTokens)) then
+						and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBoAArmorTokens)) then
 						-- LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC is used for offhands and jewelery and propably more, filtering it by using INVTYPE_HOLDABLE
 
 						if (not queue[recipient]) then
