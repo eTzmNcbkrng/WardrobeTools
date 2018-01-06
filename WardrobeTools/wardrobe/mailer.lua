@@ -310,6 +310,7 @@ local CreateSettingsFrame = function()
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER);
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL);
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
+	CreateSettingsCheckBox("sendAllBoEs", "Also mail acquired appearances");
 	CreateSettingsCheckBox("includeBalefulArmor", "Include Baleful Armor Tokens");
 
 	-- Weapons
@@ -542,6 +543,7 @@ addon.queue = {};
 
 addon.QueueMails = function(self, displayOnly)
 	local queue = (displayOnly and {} or self.queue);
+	local sendAll = addon.ADB.recipients[S.myRealm].sendAll;
 	local includeBalefulArmorTokens = addon.ADB.recipients[S.myRealm].includeBalefulArmor;
 
 	-- iterate through bags and build mailing queue
@@ -567,7 +569,7 @@ addon.QueueMails = function(self, displayOnly)
 
 					if (quality >= 2 and recipient and recipient ~= myName and recipient ~= myNameFull
 						and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
-						and not S.PlayerHasTransmog(itemLink) and S.IsBagItemTradable(bag, slot, includeBalefulArmorTokens)) then
+						and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBalefulArmorTokens)) then
 						-- LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC is used for offhands and jewelery and propably more, filtering it by using INVTYPE_HOLDABLE
 
 						if (not queue[recipient]) then
