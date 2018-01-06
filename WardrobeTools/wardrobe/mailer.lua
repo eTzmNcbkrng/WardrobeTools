@@ -543,7 +543,7 @@ addon.queue = {};
 
 addon.QueueMails = function(self, displayOnly)
 	local queue = (displayOnly and {} or self.queue);
-	local sendAll = addon.ADB.recipients[S.myRealm].sendAll;
+	local sendAllBoEs = addon.ADB.recipients[S.myRealm].sendAllBoEs;
 	local includeBalefulArmorTokens = addon.ADB.recipients[S.myRealm].includeBalefulArmor;
 
 	-- iterate through bags and build mailing queue
