@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 80000
 ## Title: WardrobeTools
 ## Notes: Quickly soulbind items for collecting their appearance and mail them to other characters
 ## SavedVariables: WardrobeToolsADB
