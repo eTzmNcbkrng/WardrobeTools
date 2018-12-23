@@ -385,7 +385,7 @@ local ResizePostalButtons = function()
 	if (not PostalSelectOpenButton or not PostalSelectReturnButton or PostalSelectOpenButton:GetWidth() == 76) then return; end
 
 	PostalSelectOpenButton:ClearAllPoints();
-	PostalSelectOpenButton:SetPoint("TOPLEFT", "MailFramePortraitFrame", "RIGHT", 0, -2);
+	PostalSelectOpenButton:SetPoint("TOPLEFT", "MailFrame", "RIGHT", 0, -2);
 	PostalSelectOpenButton:SetWidth(76);
 
 	PostalSelectReturnButton:SetWidth(76);
@@ -407,7 +407,7 @@ local CreateButtons = function()
 		local sendButton = CreateFrame("Button", nil, InboxFrame, "UIPanelButtonTemplate");
 		sendButton:SetHeight(buttonHeight);
 		sendButton:SetWidth(OpenMailReplyButton:GetWidth() * 1.5 - 16);
-		sendButton:SetPoint("TOPLEFT", "MailFramePortraitFrame", "RIGHT", OpenMailReplyButton:GetWidth() * 1.5 + 4, -2);
+		sendButton:SetPoint("TOPLEFT", "MailFrame", "RIGHT", OpenMailReplyButton:GetWidth() * 1.5 + 4, -2);
 		sendButton:SetText("Send Transmogs");
 		sendButton:RegisterEvent("MAIL_INBOX_UPDATE");
 		sendButton:RegisterEvent("UI_ERROR_MESSAGE");
