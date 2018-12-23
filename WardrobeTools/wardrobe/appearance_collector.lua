@@ -159,8 +159,8 @@ addon.PLAYER_LEVEL_UP = function(self, event, level)
 end
 
 local GetAppearanceCollectorEquipmentSetID = function()
-	for i = 1, GetNumEquipmentSets() do
-		local name, _, id = GetEquipmentSetInfo(i);
+	for i = 1, C_EquipmentSet.GetNumEquipmentSets() do
+		local name, _, id = C_EquipmentSet.GetEquipmentSetInfo(i);
 		if (name == equipmentSet) then
 			return id;
 		end
