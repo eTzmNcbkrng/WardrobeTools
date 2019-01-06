@@ -385,7 +385,7 @@ local ResizePostalButtons = function()
 	if (not PostalSelectOpenButton or not PostalSelectReturnButton or PostalSelectOpenButton:GetWidth() == 76) then return; end
 
 	PostalSelectOpenButton:ClearAllPoints();
-	PostalSelectOpenButton:SetPoint("TOPLEFT", "MailFrame", "RIGHT", 0, -2);
+	PostalSelectOpenButton:SetPoint("TOPLEFT", "MailFrame", "TOPLEFT", 64, -30);
 	PostalSelectOpenButton:SetWidth(76);
 
 	PostalSelectReturnButton:SetWidth(76);
