@@ -290,7 +290,7 @@ local CreateSettingsFrame = function()
 	local frame = CreateFrame("Frame", "SezzUIAppearanceMailerRecipients", InboxFrame, "UIPanelDialogTemplate");
 	frame:Hide();
 	frame:SetPoint("TOPLEFT", 335, 4);
-	frame:SetSize(384, 596);
+	frame:SetSize(384, 624);
 	frame:EnableMouse(true);
 	frame:SetScript("OnShow", SettingsFrame_OnShow);
 	frame:SetScript("OnHide", SettingsFrame_OnHide);
@@ -563,7 +563,7 @@ addon.QueueMails = function(self, displayOnly)
 
 					if (includeBoAArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and BoAArmorTokens[itemID]) then
 						itemSubClassID = BoAArmorTokens[itemID];
-					end					
+					end
 
 					local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][itemClassID] and self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID]) or nil);
 

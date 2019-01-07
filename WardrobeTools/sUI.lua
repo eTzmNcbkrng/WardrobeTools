@@ -44,7 +44,7 @@ end
 local MAJOR, MINOR, MICRO = unpack(versionData);
 BUILD = tonumber(BUILD);
 
-local isBeta = (MAJOR == 7);
+local isBeta = (MAJOR == 9);
 S.IsBeta = function()
 	return isBeta;
 end
