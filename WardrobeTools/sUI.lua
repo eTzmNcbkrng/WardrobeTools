@@ -27,6 +27,7 @@ local GetRealmName, UnitName, UnitLevel, _G = GetRealmName, UnitName, UnitLevel,
 
 S.dummy = function() return; end;
 S.myRealm = GetRealmName();
+S.myFactionGroup = select(2, UnitFactionGroup("player"));
 S.myName = UnitName("player");
 S.myClass = select(2, UnitClass("player"));
 S.myLevel = UnitLevel("player");
@@ -44,7 +45,7 @@ end
 local MAJOR, MINOR, MICRO = unpack(versionData);
 BUILD = tonumber(BUILD);
 
-local isBeta = (MAJOR == 7);
+local isBeta = (MAJOR == 9);
 S.IsBeta = function()
 	return isBeta;
 end
