@@ -407,7 +407,7 @@ local CreateButtons = function()
 		local sendButton = CreateFrame("Button", nil, InboxFrame, "UIPanelButtonTemplate");
 		sendButton:SetHeight(buttonHeight);
 		sendButton:SetWidth(OpenMailReplyButton:GetWidth() * 1.5 - 16);
-		sendButton:SetPoint("TOPLEFT", "MailFrame", "RIGHT", OpenMailReplyButton:GetWidth() * 1.5 + 4, -2);
+		sendButton:SetPoint("TOPLEFT", "MailFramePortrait", "RIGHT", OpenMailReplyButton:GetWidth() * 1.5 + 20, -10);
 		sendButton:SetText("Send Transmogs");
 		sendButton:RegisterEvent("MAIL_INBOX_UPDATE");
 		sendButton:RegisterEvent("UI_ERROR_MESSAGE");
