@@ -248,10 +248,10 @@ local UpdateSettings = function()
 	-- Fill edit box text with saved settings
 	for _, frame in pairs({ addon.configFrame:GetChildren() }) do
 		if (frame.itemClassID and frame.itemSubClassID) then
-			frame.editbox:SetText(addon.ADB.recipients[S.myRealm][frame.itemClassID][frame.itemSubClassID] or "");
+			frame.editbox:SetText(addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.itemClassID][frame.itemSubClassID] or "");
 		elseif (frame.valueID) then
 			-- Checkbox
-			frame.checkbox:SetChecked(addon.ADB.recipients[S.myRealm][frame.valueID]);
+			frame.checkbox:SetChecked(addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.valueID]);
 		end
 	end
 end
@@ -262,16 +262,16 @@ local SaveSettings = function()
 		if (frame.itemClassID and frame.itemSubClassID) then
 			-- Editbox
 			local recipient = frame.editbox:GetText();
-			addon.ADB.recipients[S.myRealm][frame.itemClassID][frame.itemSubClassID] = (strlen(recipient) >= 2 and recipient or nil);
+			addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.itemClassID][frame.itemSubClassID] = (strlen(recipient) >= 2 and recipient or nil);
 		elseif (frame.valueID) then
 			-- Checkbox
-			addon.ADB.recipients[S.myRealm][frame.valueID] = frame.checkbox:GetChecked();
+			addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.valueID] = frame.checkbox:GetChecked();
 		end
 	end
 
 	-- Whoever is able to use LE_ITEM_WEAPON_BOWS can also use LE_ITEM_WEAPON_CROSSBOW + LE_ITEM_WEAPON_GUNS
-	addon.ADB.recipients[S.myRealm][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_CROSSBOW] = addon.ADB.recipients[S.myRealm][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_BOWS];
-	addon.ADB.recipients[S.myRealm][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_GUNS] = addon.ADB.recipients[S.myRealm][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_BOWS];
+	addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_CROSSBOW] = addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_BOWS];
+	addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_GUNS] = addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_BOWS];
 end
 
 local SettingsFrame_OnShow = function(self)
@@ -407,7 +407,7 @@ local CreateButtons = function()
 		local sendButton = CreateFrame("Button", nil, InboxFrame, "UIPanelButtonTemplate");
 		sendButton:SetHeight(buttonHeight);
 		sendButton:SetWidth(OpenMailReplyButton:GetWidth() * 1.5 - 16);
-		sendButton:SetPoint("TOPLEFT", "MailFrame", "RIGHT", OpenMailReplyButton:GetWidth() * 1.5 + 4, -2);
+		sendButton:SetPoint("TOPLEFT", "MailFramePortrait", "RIGHT", OpenMailReplyButton:GetWidth() * 1.5 + 20, -10);
 		sendButton:SetText("Send Transmogs");
 		sendButton:RegisterEvent("MAIL_INBOX_UPDATE");
 		sendButton:RegisterEvent("UI_ERROR_MESSAGE");
@@ -462,12 +462,16 @@ addon.InitializeProfile = function(self)
 		self.ADB.recipients[S.myRealm] = {};
 	end
 
-	if (not self.ADB.recipients[S.myRealm][LE_ITEM_CLASS_ARMOR]) then
-		self.ADB.recipients[S.myRealm][LE_ITEM_CLASS_ARMOR] = {};
+	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup]) then
+		self.ADB.recipients[S.myRealm][S.myFactionGroup] = {};
 	end
 
-	if (not self.ADB.recipients[S.myRealm][LE_ITEM_CLASS_WEAPON]) then
-		self.ADB.recipients[S.myRealm][LE_ITEM_CLASS_WEAPON] = {};
+	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_ARMOR]) then
+		self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_ARMOR] = {};
+	end
+
+	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON]) then
+		self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON] = {};
 	end
 end
 
@@ -543,8 +547,8 @@ addon.queue = {};
 
 addon.QueueMails = function(self, displayOnly)
 	local queue = (displayOnly and {} or self.queue);
-	local sendAllBoEs = addon.ADB.recipients[S.myRealm].sendAllBoEs;
-	local includeBoAArmorTokens = addon.ADB.recipients[S.myRealm].includeBoAArmorTokens;
+	local sendAllBoEs = addon.ADB.recipients[S.myRealm][S.myFactionGroup].sendAllBoEs;
+	local includeBoAArmorTokens = addon.ADB.recipients[S.myRealm][S.myFactionGroup].includeBoAArmorTokens;
 
 	-- iterate through bags and build mailing queue
 	local bag, slot;
@@ -565,7 +569,7 @@ addon.QueueMails = function(self, displayOnly)
 						itemSubClassID = BoAArmorTokens[itemID];
 					end
 
-					local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][itemClassID] and self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][itemClassID][itemSubClassID]) or nil);
+					local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID] and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID]) or nil);
 
 					if (quality >= 2 and quality ~= 7 and recipient and recipient ~= myName and recipient ~= myNameFull
 						and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
