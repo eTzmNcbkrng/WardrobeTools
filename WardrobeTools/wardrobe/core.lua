@@ -39,6 +39,7 @@
 
 		Returns values:
 			isTradable (boolean)
+			
 
 --]]
 
@@ -125,6 +126,7 @@ local PlayerHasApperanceSource = function(item)
 	return false;
 end
 
+
 local PlayerHasTransmog = function(item, checkSource, forceRefresh)
 	if (not item or (checkSource and not S.ItemIsValidTransmogrifySource(item))) then return; end
 	model:SetUnit("player");
@@ -146,9 +148,25 @@ local PlayerHasTransmog = function(item, checkSource, forceRefresh)
 			local itemID = type(item) == "string" and tonumber(strmatch(item, "item:(%d+)")) or item;
 			isCollected = C_TransmogCollection.PlayerHasTransmog(itemID);
 		else
-			model:TryOn(item);
+			model:TryOn(item,slot);
 
-			local appearanceSourceID = model:GetSlotTransmogSources(equipSlotIDs[equipSlot]);
+			--local appearanceSourceID = model:GetSlotTransmogSources(equipSlotIDs[equipSlot]);
+			
+			-- Credit to TorelTwiddler (CanIMogIt)
+			
+			local transmogInfo = model:GetItemTransmogInfo(equipSlotIDs[equipSlot]);
+			if transmogInfo and 
+				transmogInfo.appearanceID ~= nil and
+				transmogInfo.appearanceID ~= 0 then
+				-- Yes, that's right, we are setting `appearanceID` to the `sourceID`. Blizzard messed
+				-- up the DressUpModel functions, so _they_ don't even know what they do anymore.
+				-- The `appearanceID` field from `DressUpModel:GetItemTransmogInfo` is actually its
+				-- source ID, not it's appearance ID.
+				appearanceSourceID = transmogInfo.appearanceID				
+			end
+			
+			--
+			
 			if (appearanceSourceID == 0 and (equipSlotIDs[equipSlot] == 16 or equipSlotIDs[equipSlot] == 17)) then
 				-- Even though the model is undressed it sometimes puts weapons into the offhand slot instead of the mainhand slot,
 				-- especially when equipping 2 similar items (like two Baleful weapons with different attributes)
@@ -219,6 +237,7 @@ local PlayerHasTransmog = function(item, checkSource, forceRefresh)
 	return isCollected, isCollectedSource;
 end
 
+
 S.PlayerHasTransmog = PlayerHasTransmog;
 
 -----------------------------------------------------------------------------
@@ -231,7 +250,11 @@ local ItemIsValidTransmogrifySource = function(itemLink)
 	if (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_COSMETIC) then return true; end -- C_Transmog.GetItemInfo() doesn't like cosmetic armor
 
 	local isDressable = IsDressableItem(itemID);
-	local _, _, canBeSource, noSourceReason = C_Transmog.GetItemInfo(itemID);
+	-- message(itemID)
+	
+	-- local _, _, canBeSource, noSourceReason = C_Transmog.GetItemInfo(itemID);
+	local _, _, canBeSource, noSourceReason = select(1, C_Transmog.CanTransmogItem(itemID))
+	
 	if (not isDressable or not canBeSource) then return false, noSourceReason; end
 
 	if (equipSlot == "INVTYPE_NECK" or equipSlot == "INVTYPE_FINGER" or equipSlot == "INVTYPE_TRINKET") then return false; end
