@@ -29,7 +29,7 @@ The TSM filter settings are located with the other settings accessible through t
 
 If these settings aren't valid or TSM isn't installed, WardrobeTools will not send *any* mail until you fix the settings or un-check "Enable TSM filtering."
 
-**IMPORTANT: TSM filtering only applies to MAILING. AppearanceCollector (/ac) does *not* look at TSM data. If there are valuable uncollected appearances in your inventory, /ac will *not* stop you from equipping them.**
+## **IMPORTANT: TSM filtering only applies to MAILING. AppearanceCollector (/ac) does *not* look at TSM data. If there are valuable uncollected appearances in your inventory, /ac will *not* stop you from equipping them.**
 
 ### Do I need TradeSkillMaster to use WardrobeTools?
 
