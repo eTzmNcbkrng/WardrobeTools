@@ -1,9 +1,9 @@
-## Interface: 80000
+## Interface: 90100
 ## Title: WardrobeTools
-## Notes: Quickly soulbind items for collecting their appearance and mail them to other characters
+## Notes: A simple addon to streamline transmog/appearance collection.
 ## SavedVariables: WardrobeToolsADB
 ## SavedVariablesPerCharacter: WardrobeToolsCDB
-## Version: 0.9.9
+## Version: 1.0.0
 
 ## OptionalDeps: sUI
 ## X-SezzADB: WardrobeToolsADB
