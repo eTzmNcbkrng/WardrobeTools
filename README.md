@@ -15,6 +15,8 @@ WardrobeTools works well alongside TradeSkillMaster, but TSM is not required to 
 * Then click "Send Transmogs" to mail items. 
 * Hover on "Send Transmogs" for a preview of which items will be mailed.
 
+The settings are saved separately for each realm and faction.
+
 ### New Advanced Feature: TradeSkillMaster Filtering!
 
 WardrobeTools' mailer can now stop items from being mailed, based on values from TradeSkillMaster. (This is an entirely optional feature, WardrobeTools works without TSM too.)
