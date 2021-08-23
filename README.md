@@ -6,6 +6,8 @@ WardrobeTools is a simple World of Warcraft addon that streamlines transmog/appe
 
 * **AppearanceCollector**: Once your alts have received the mailed items, use **/ac** to display the AppearanceCollector button. Clicking the button will equip an uncollected appearance item from your inventory. Clicking the button again will equip the next uncollected item, and so forth, until all appearances have been collected from items in your inventory. The last click will swap back to your original equipment.
 
+WardrobeTools works well alongside TradeSkillMaster, but TSM is not required to use WardrobeTools.
+
 ### Setup 
 
 * Open WardrobeTools settings from the default mailbox UI, by clicking the [>] button next to "Send Transmogs." 
