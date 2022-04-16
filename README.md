@@ -45,5 +45,5 @@ That was a bit of a risky and hidden feature, which might cause you to accidenta
 
 ### Addon History
 
-- This Addon was initialy copied from a forum post [here](http://stormspire.net/general-tradeskillmaster-discussion/18409-mailing-groups-boe-armor-classes-post169681.html#post169681).  
+- This Addon was initialy copied from a forum post [here](https://web.archive.org/web/20180702062818/http://stormspire.net/general-tradeskillmaster-discussion/18409-mailing-groups-boe-armor-classes-2.html).  
 - The majority was written by Martin Karer/Sezz and is distributed under his license.
