@@ -23,7 +23,7 @@ local TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, TRANSMOGRIFY_TOOLTIP_APPEARANCE_K
 
 -- Text
 local tooltipAppearanceUnusable = "You can't collect this appearance";
-local tooltipSuffix = " (*)"; -- Makes it easier to tell if Blizzard added the text or we did...
+local tooltipSuffix = "!"; -- Makes it easier to tell if Blizzard added the text or we did...
 
 -- Colors
 local colorKnownR, colorKnownG, colorKnownB = 170/255, 255/255, 126/255;
@@ -84,4 +84,5 @@ for _, tt in pairs({ GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemR
 end
 
 -- Enable additional Blizzard text
-C_TransmogCollection.SetShowMissingSourceInItemTooltips(true);
+--C_TransmogCollection.SetShowMissingSourceInItemTooltips(true);
+SetCVar("missingTransmogSourceInItemTooltips", 1)

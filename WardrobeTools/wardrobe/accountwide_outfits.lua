@@ -50,8 +50,9 @@ addon.OnEnable = function(self)
 
 	if (not S.InGame) then
 		self:RegisterEvent("PLAYER_LOGIN");
-	else
-		self:SyncOutfits();
+	--else
+		--self:SyncOutfits();
+		--self:SyncOutfits();
 	end
 end
 
@@ -73,9 +74,10 @@ addon.SyncOutfits = function(self)
 
 	-- fetch outfits from server
 	local serverOutfits = {};
-	for _, outfit in pairs(GetOutfits()) do
-		local appearanceSources, mainHandEnchant, offHandEnchant = GetOutfitSources(outfit.outfitID);
+	for _, outfit in ipairs(C_TransmogCollection.GetOutfits()) do
 	
+		local appearanceSources, mainHandEnchant, offHandEnchant = C_TransmogCollection.GetOutfitSources(outfit);
+
 		serverOutfits[outfit.name] = {
 			id = outfit.outfitID,
 			icon = outfit.icon,
@@ -83,6 +85,7 @@ addon.SyncOutfits = function(self)
 			mainHandEnchant = mainHandEnchant,
 			offHandEnchant = offHandEnchant,
 		};
+
 	end
 
 	-- compare outfits
@@ -167,7 +170,7 @@ addon.SyncOutfits = function(self)
 end
 
 addon.PLAYER_LOGIN = function(self, event)
-	self:SyncOutfits();
+	--self:SyncOutfits();
 	self:UnregisterEvent(event);
 end
 
@@ -196,29 +199,29 @@ hooksecurefunc(C_TransmogCollection, "DeleteOutfit", function(outfitID)
 	end
 end);
 
-hooksecurefunc(C_TransmogCollection, "SaveOutfit", function(name, appearanceSources, mainHandEnchant, offHandEnchant, icon)
-	-- We cannot use the passed arguments because they are different to C_TransmogCollection.GetOutfitSources() return values
-	if (not addon.enabledState or syncing) then return; end
+-- hooksecurefunc(C_TransmogCollection, "SaveOutfit", function(name, appearanceSources, mainHandEnchant, offHandEnchant, icon)
+	-- -- We cannot use the passed arguments because they are different to C_TransmogCollection.GetOutfitSources() return values
+	-- if (not addon.enabledState or syncing) then return; end
 
-	local found = false;
-	for _, outfit in pairs(GetOutfits()) do
-		if (outfit.name == name) then
-			found = true;
+	-- local found = false;
+	-- for _, outfit in pairs(GetOutfits()) do
+		-- if (outfit.name == name) then
+			-- found = true;
 
-			local appearanceSources, mainHandEnchant, offHandEnchant = GetOutfitSources(outfit.outfitID);
-			addon.outfits[name] = {
-				id = outfit.outfitID,
-				appearanceSources = appearanceSources,
-				mainHandEnchant = mainHandEnchant,
-				offHandEnchant = offHandEnchant,
-				icon = icon,
-				modifiedBy = myCharacter,
-			};
-			break;
-		end
-	end
+			-- local appearanceSources, mainHandEnchant, offHandEnchant = GetOutfitSources(outfit.outfitID);
+			-- addon.outfits[name] = {
+				-- id = outfit.outfitID,
+				-- appearanceSources = appearanceSources,
+				-- mainHandEnchant = mainHandEnchant,
+				-- offHandEnchant = offHandEnchant,
+				-- icon = icon,
+				-- modifiedBy = myCharacter,
+			-- };
+			-- break;
+		-- end
+	-- end
 
-	if (not found) then
-		addon:PrintError(strformat("Recently saved outfit %s not found on server!", name));
-	end
-end);
+	-- if (not found) then
+		-- addon:PrintError(strformat("Recently saved outfit %s not found on server!", name));
+	-- end
+-- end);

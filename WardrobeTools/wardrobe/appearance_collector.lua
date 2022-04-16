@@ -277,9 +277,10 @@ addon.OnDisable = function(self)
 	DeleteAppearanceCollectorEquipmentSet();
 end
 
-addon.BindMouseWheel = function(self)
-	SetOverrideBindingClick(self, true, "MOUSEWHEELUP", self:GetName());
-	SetOverrideBindingClick(self, true, "MOUSEWHEELDOWN", self:GetName());
+addon.BindMouseWheel = function(self)	
+	--SetOverrideBindingClick(self, true, "MOUSEWHEELUP", self:GetName());
+	--SetOverrideBindingClick(self, true, "MOUSEWHEELDOWN", self:GetName());
+	return;
 end
 
 addon.UnbindMouseWheel = function(self)
