@@ -201,7 +201,7 @@ addon.OnEnable = function(self)
 		self:SetSize(64, 64);
 		self:SetScript("OnEnter", ShowTooltip);
 		self:SetScript("OnLeave", GameTooltip_Hide);
-		self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "LeftButtonDown", "RightButtonDown");
 		self:SetMovable(true);
 		self:RegisterForDrag("LeftButton");
 		self:EnableMouse(true);
