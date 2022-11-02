@@ -4,7 +4,7 @@ WardrobeTools is a simple World of Warcraft addon that streamlines transmog/appe
 
 * **Mailer**: With one click, WardobeTools examines all BOE armor and weapons in your inventory, determines if you have collected the appearance from each, and if not, automatically mails each item to alts that can equip them. This can be done with the "Send Transmogs" button that WardrobeTools adds to the default mailbox UI. 
 
-* **AppearanceCollector**: Once your alts have received the mailed items, use **/ac** to display the AppearanceCollector button. Clicking the button will equip an uncollected appearance item from your inventory. Clicking the button again will equip the next uncollected item, and so forth, until all appearances have been collected from items in your inventory. The last click will swap back to your original equipment.
+* **AppearanceCollector**: Once your alts have received the mailed items, use **/ac** to display the AppearanceCollector button. Clicking the button will equip an uncollected appearance item from your inventory. Clicking the button again will equip the next uncollected item, and so forth, until all appearances have been collected from items in your inventory. The last click will swap back to your original equipment. To move the AppearanceCollector button, hold ALT and drag it.
 
 ### Simple Setup 
 
