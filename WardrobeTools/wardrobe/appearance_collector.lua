@@ -198,7 +198,7 @@ addon.OnEnable = function(self)
 	-- Create button
 	if (not self:GetAttribute("type")) then
 		self:SetPoint(self.DB.anchor, self.DB.x, self.DB.y);
-		self:SetSize(64, 64);
+		self:SetSize(48, 48);
 		self:SetScript("OnEnter", ShowTooltip);
 		self:SetScript("OnLeave", GameTooltip_Hide);
 		self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
