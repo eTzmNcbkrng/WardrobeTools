@@ -1,9 +1,9 @@
-## Interface: 90100
+## Interface: 10000
 ## Title: WardrobeTools
 ## Notes: A simple addon to streamline transmog/appearance collection.
 ## SavedVariables: WardrobeToolsADB
 ## SavedVariablesPerCharacter: WardrobeToolsCDB
-## Version: 1.0.0
+## Version: 1.0.1
 
 ## OptionalDeps: sUI
 ## X-SezzADB: WardrobeToolsADB
