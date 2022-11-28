@@ -25,7 +25,13 @@ local addon = S:CreateModule("AppearanceMailer"):AddDefaultHandlers();
 local select, strlen, tinsert, tremove, strlower, next = select, string.len, table.insert, table.remove, string.lower, next;
 
 -- WoW API
-local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, PickupContainerItem, ClickSendMailItemButton, SendMail, GetItemInfo = GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, PickupContainerItem, ClickSendMailItemButton, SendMail, GetItemInfo;
+local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, ClickSendMailItemButton, SendMail, GetItemInfo = GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, ClickSendMailItemButton, SendMail, GetItemInfo;
+
+
+local GetContainerItemID = GetContainerItemID or (C_Container and C_Container.GetContainerItemID)
+local GetContainerItemLink = GetContainerItemLink or (C_Container and C_Container.GetContainerItemLink)
+local GetContainerNumSlots = GetContainerNumSlots or (C_Container and C_Container.GetContainerNumSlots)
+local PickupContainerItem = PickupContainerItem or (C_Container and C_Container.PickupContainerItem)
 
 local ATTACHMENTS_MAX_SEND = ATTACHMENTS_MAX_SEND
 local INVTYPE_RANGED = INVTYPE_RANGED
@@ -186,7 +192,7 @@ local BoAArmorTokens = {
 local settingsAnchor;
 
 local CreateSettingsHeader = function(itemClassID)
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(18);
 
 	if (settingsAnchor) then
@@ -224,7 +230,7 @@ end
 
 local CreateTSMsettingsHeader = function(variable)
 
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(18);
 
 	if (settingsAnchor) then
@@ -262,7 +268,7 @@ end
 
 
 local CreateSettingsEditBox = function(itemClassID, itemSubClassID, customText)
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(26);
 	frame:SetPoint("TOP", settingsAnchor, "BOTTOM", 0, 0);
 	frame:SetPoint("LEFT");
@@ -291,7 +297,7 @@ end
 
 local CreateTSMsettingsEditBox = function(TSMsetting, customText)
 
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(26);
 	frame:SetPoint("TOP", settingsAnchor, "BOTTOM", 0, 0);
 	frame:SetPoint("LEFT");
@@ -318,7 +324,7 @@ local CreateTSMsettingsEditBox = function(TSMsetting, customText)
 end
 
 local CreateSettingsCheckBox = function(valueID, customText)
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(26);
 	frame:SetPoint("TOP", settingsAnchor, "BOTTOM", 0, 0);
 	frame:SetPoint("LEFT");

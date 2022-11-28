@@ -103,7 +103,7 @@ end
 -- UI
 -----------------------------------------------------------------------------
 
-S.UIParent = CreateFrame("Frame", "SezzUIParent", UIParent);
+S.UIParent = CreateFrame("Frame", "SezzUIParent", UIParent, BackdropTemplateMixin and "BackdropTemplate");
 S.UIParent:SetAllPoints(UIParent);
 
 S.Scale = function(self, i)
@@ -430,7 +430,8 @@ S.UIParent:RegisterEvent("PLAYER_LOGIN", HandleLevelUp);
 -----------------------------------------------------------------------------
 
 -- Hidden Tooltip for Scanning (Credits: tekkub)
-local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip");
+--local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip");
+local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip", UIParent, "GameTooltipTemplate");
 tt:SetOwner(WorldFrame, "ANCHOR_NONE");
 
 local lcache, rcache = {}, {};
