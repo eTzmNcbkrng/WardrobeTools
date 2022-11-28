@@ -1,8 +1,8 @@
---[[ 
+--[[
 
 	Martin Karer / Sezz, 2016
 	Wardrobe BoE mailer
-	
+
 --]]
 
 if (IsTrialAccount() or IsRestrictedAccount()) then return; end -- Mail is disabled for Trial accounts.
@@ -245,9 +245,9 @@ local CreateTSMsettingsHeader = function(variable)
 	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontNormal");
 	label:SetPoint("TOP");
 	label:SetPoint("BOTTOM");
-	label:SetJustifyH("CENTER");	
+	label:SetJustifyH("CENTER");
 	label:SetText("TradeSkillMaster");
-		
+
 	local left = frame:CreateTexture(nil, "BACKGROUND");
 	left:SetHeight(8);
 	left:SetPoint("LEFT", 14, 0);
@@ -363,14 +363,14 @@ local UpdateSettings = function()
 	-- Fill edit box text with saved settings
 
 	for _, frame in pairs({ addon.configFrame:GetChildren() }) do
-		
+
 		if (frame.itemClassID and frame.itemSubClassID) then
 			frame.editbox:SetText(addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.itemClassID][frame.itemSubClassID] or "");
-			
+
 		elseif (frame.valueID) then
 			-- Checkbox
 			frame.checkbox:SetChecked(addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.valueID]);
-			
+
 		elseif (frame.TSMsetting) then
 			frame.editbox:SetText(addon.ADB.TSM[frame.TSMsetting] or "");
 		end
@@ -458,7 +458,7 @@ local CreateSettingsFrame = function()
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_SHIELD);
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, INVTYPE_HOLDABLE);
 
-	--TSM 
+	--TSM
 
 	CreateTSMsettingsHeader();
 	CreateSettingsCheckBox("TSMenabled", "Enable TSM filtering");
@@ -491,25 +491,25 @@ local SendButton_ShowTooltip = function(self)
 	if (addon.configFrame:IsVisible()) then
 		SaveSettings();
 	end
-	
-	local queue = addon:QueueMails(true);	
-	
+
+	local queue = addon:QueueMails(true);
+
 	local queue_size = 0
-	for _ in pairs(queue) do queue_size = queue_size + 1 end	
-	
+	for _ in pairs(queue) do queue_size = queue_size + 1 end
+
 	local TSMenabled = addon.ADB.recipients[S.myRealm][S.myFactionGroup].TSMenabled;
 	local TSMpricesource = addon.ADB.TSM.pricesource;
 	local TSMthreshold = tonumber(addon.ADB.TSM.threshold);
 	local TSMcheck = false;
 	local TSMerror = false;
-	
+
 	--Check if TSM options are set up properly
 	if TSMenabled then
-		if TSM_API then 					
+		if TSM_API then
 			-- Check if the set price source and threshold are valid. Only continue using TSM options if these options valid.
-			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then			
+			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then
 				TSMcheck = true;
-				
+
 				if (next(queue)) then
 					-- show tooltip
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -524,16 +524,16 @@ local SendButton_ShowTooltip = function(self)
 
 					GameTooltip:SetClampedToScreen(true);
 					GameTooltip:Show();
-				
+
 				elseif queue_size == 0 then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:AddLine("No items to be mailed.");
 					GameTooltip:SetClampedToScreen(true);
 					GameTooltip:Show();
-				else 
+				else
 					GameTooltip:Hide();
-				end	
-					
+				end
+
 			else
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:AddLine("ERROR: Invalid TSM price source and/or threshold.\nNo mail will be sent.");
@@ -549,9 +549,9 @@ local SendButton_ShowTooltip = function(self)
 			GameTooltip:AddLine("ERROR: TradeSkillMaster addon not detected. No mail will be sent.\nTo fix this, either disable TSM filtering in WardrobeTools settings, or enable TSM.");
 			GameTooltip:SetClampedToScreen(true);
 			GameTooltip:Show();
-		end		
-	
-	else	
+		end
+
+	else
 		if (next(queue)) then
 			-- show tooltip
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -566,16 +566,16 @@ local SendButton_ShowTooltip = function(self)
 
 			GameTooltip:SetClampedToScreen(true);
 			GameTooltip:Show();
-			
+
 		elseif queue_size == 0 then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:AddLine("No items to be mailed.");
 			GameTooltip:SetClampedToScreen(true);
 			GameTooltip:Show();
-		else 
+		else
 			GameTooltip:Hide();
-		end		
-	end	
+		end
+	end
 end
 
 local ResizePostalButtons = function()
@@ -650,11 +650,11 @@ function GetItemPrice(itemID, customPriceStr)
 
    local _, link = GetItemInfo(itemID)
    local itemString = TSM_API.ToItemString(link)
-       
+
    if not TSM_API.IsCustomPriceValid(customPriceStr) then
       source = nil
    end
-   
+
    return TSM_API.GetCustomPriceValue(customPriceStr, itemString)
 end
 
@@ -765,32 +765,32 @@ local myNameFull = myName.."-"..strlower(gsub(S.myRealm, "%s", ""));
 --message(TSM_API.GetPriceSourceKeys())
 
 -- if TSM_API then
-	
+
 	-- --local _, link = GetItemInfo(4306)
 	-- --TSMvalue = GetItemPrice(link,"dbmarket");
-    
+
    -- --local itemString = TSM_API.ToItemString(link)
 
-	-- --itemString = TSM_API.ToItemString(itemLink)	
-	
+	-- --itemString = TSM_API.ToItemString(itemLink)
+
 	-- --TSMvalue = TSM_API.GetCustomPriceValue("DBMarket", itemString)
-	
+
 	-- --print(TSMvalue)
-	
+
 	-- --local pricef = ("% .2f"): format (value)
-	
+
 	-- --message(value)
 
 	-- -- if (value > 1) then
 		-- -- message("test")
 	-- -- end
-	
+
 	-- --print("WardrobeTools: TSM detected.")
 -- else
 	-- --print("WardrobeTools: TSM NOT DETECTED.")
 -- end
 
--- 
+--
 
 addon.queue = {};
 
@@ -807,12 +807,12 @@ addon.QueueMails = function(self, displayOnly)
 	-- Check if TSM options are set up properly
 	if TSMenabled then
 		--print("TSM enabled")
-		
+
 		-- Check if TSM addon is active
-		if TSM_API then 
-					
+		if TSM_API then
+
 			-- Check if the set price source and threshold are valid. Only continue using TSM options if these options valid.
-			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then			
+			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then
 				TSMcheck = true;
 			else
 				--print("WardrobeTools: Invalid TSM price source and/or threshold. No items will be sent.");
@@ -823,9 +823,9 @@ addon.QueueMails = function(self, displayOnly)
 			-- TSM addon not detected
 			TSMerror = true;
 			--print("WardrobeTools: TSM addon not detected. No items will be sent. Disable the TSM option in WardrobeTools settings, or enable the TSM addon.");
-		end		
+		end
 	end
-	
+
 	-- iterate through bags and build mailing queue
 
 		local bag, slot;
@@ -834,10 +834,10 @@ addon.QueueMails = function(self, displayOnly)
 				local itemID = GetContainerItemID(bag, slot);
 				local itemLink = GetContainerItemLink(bag, slot);
 				local TSMgreenlight = false;
-				
+
 				if (itemID and itemLink) then
 					local name, _, quality, _, _, _, _, _, equipSlot, _, _, itemClassID, itemSubClassID = GetItemInfo(itemID);
-					
+
 					if (name) then
 						if (includeBoAArmorTokens and string.find(name, "Unsullied")) then
 							itemSubClassID = BoAArmorTokens[itemID]
@@ -847,33 +847,33 @@ addon.QueueMails = function(self, displayOnly)
 						if (includeBoAArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and BoAArmorTokens[itemID]) then
 							itemSubClassID = BoAArmorTokens[itemID];
 						end
-						
+
 						--Run TSM checks for the item
-						if TSMenabled then		
-						
+						if TSMenabled then
+
 							if TSMcheck then
-							
+
 								TSMvalue = (GetItemPrice(itemID,TSMpricesource) or nil);
-								
+
 								--Only greenlight the item to be mailed if TSMvalue is less than the set threshold.
 								if(TSMvalue and TSMthreshold and TSMvalue < TSMthreshold) then
-									TSMgreenlight = true;										
-								else	
+									TSMgreenlight = true;
+								else
 									TSMgreenlight = false;
-								end	
-							
+								end
+
 							else
 								TSMvalue = nil;
 								TSMgreenlight = false;
-							end		
-							
+							end
+
 						else
 							--If TSM options are disabled, greenlight ALL items to be mailed
 							TSMgreenlight = true;
-						end	
+						end
 
 						local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID] and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID]) or nil);
-						
+
 						if (TSMgreenlight and (not TSMerror) and quality >= 2 and quality ~= 7 and recipient and recipient ~= myName and recipient ~= myNameFull
 							and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
 							and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBoAArmorTokens)) then
@@ -906,11 +906,11 @@ addon.QueueMails = function(self, displayOnly)
 			return queue;
 		end
 	end
-	
+
 
 addon.ProcessQueue = function(self)
 	local recipient, items = next(self.queue);
-	
+
 	if (recipient) then
 		-- clear message
 		ClearSendMail();

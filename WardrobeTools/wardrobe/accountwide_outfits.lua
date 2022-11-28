@@ -1,4 +1,4 @@
---[[ 
+--[[
 
 	Martin Karer / Sezz, 2016
 	Syncs outfits between all characters of the same class
@@ -65,7 +65,7 @@ end
 
 local myCharacter = S.myName.."-"..S.myRealm;
 local now = time(); -- load timestamp is fine, we don't need exact values
-local deletedOutfit = { deletedAt = now }; 
+local deletedOutfit = { deletedAt = now };
 
 local syncing = false;
 
@@ -75,7 +75,7 @@ addon.SyncOutfits = function(self)
 	-- fetch outfits from server
 	local serverOutfits = {};
 	for _, outfit in ipairs(C_TransmogCollection.GetOutfits()) do
-	
+
 		local appearanceSources, mainHandEnchant, offHandEnchant = C_TransmogCollection.GetOutfitSources(outfit);
 
 		serverOutfits[outfit.name] = {
