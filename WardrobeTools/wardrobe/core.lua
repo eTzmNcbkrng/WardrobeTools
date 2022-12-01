@@ -5,8 +5,8 @@
 	PlayerHasTransmog(itemID|itemLink[, checkSource, forceRefresh])
 		Returns if the player has collected the item apperance,
 		Use ItemIsValidTransmogrifySource first to check if the item appearance can be used for transmogging or pass checkSource as 2nd optional argument.
-		Set forceRefresh to true if you are also calling this on TRANSMOG_COLLECTION_UPDATED!
 		
+		Set forceRefresh to true if you are also calling this on TRANSMOG_COLLECTION_UPDATED!
 		Return values:
 			hasTransmog (boolean)
 			hasTransmogSource (boolean) - due to Blizzard's limitations this only works for items the player can equip it
@@ -59,10 +59,9 @@ if (addonName == "WardrobeTools" and SezzUI) then return; end
 local strmatch, tonumber, select = string.match, tonumber, select;
 
 -- WoW API/Constants
-local IsDressableItem, GetItemInfo = IsDressableItem, GetItemInfo;
-local TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN = TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN;
-local LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_ARMOR_COSMETIC = LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_ARMOR_COSMETIC;
 
+local TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN = TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN, TRANSMOGRIFY_TOOLTIP_APPEARANCE_KNOWN, TRANSMOGRIFY_TOOLTIP_ITEM_UNKNOWN_APPEARANCE_KNOWN;
+--local GetItemInfo = C_Item.IsDressableItemByID;
 -----------------------------------------------------------------------------
 
 local tooltip = S.ScanningTooltip;
@@ -128,6 +127,7 @@ end
 
 
 local PlayerHasTransmog = function(item, checkSource, forceRefresh)
+
 	if (not item or (checkSource and not S.ItemIsValidTransmogrifySource(item))) then return; end
 	model:SetUnit("player");
 	model:Undress();
@@ -213,13 +213,13 @@ local PlayerHasTransmog = function(item, checkSource, forceRefresh)
 							end
 						else
 							-- Failover #3, doesn't show if already collected any other items with the same appearance.
-							isCollected = select(5, C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID)) or false;
-							if (not isCollected and C_TransmogCollection.GetShowMissingSourceInItemTooltips()) then
-								isCollected = PlayerHasApperanceSource(item);
+							--isCollected = select(5, C_TransmogCollection.GetAppearanceSourceInfo(appearanceSourceID)) or false;
+							--if (not isCollected and C_TransmogCollection.GetShowMissingSourceInItemTooltips()) then
+								--isCollected = PlayerHasApperanceSource(item);
 --								if (isCollected) then
 --									S:Debug("PlayerHasApperanceSourceTooltip!");
 --								end
-							end
+							--end
 						end
 					end
 				end
@@ -247,9 +247,10 @@ local ItemIsValidTransmogrifySource = function(itemLink)
 	if (not itemID) then return false; end
 
 	local equipSlot, _, _, itemClassID, itemSubClassID = select(9, GetItemInfo(itemLink));
-	if (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_COSMETIC) then return true; end -- C_Transmog.GetItemInfo() doesn't like cosmetic armor
 
-	local isDressable = IsDressableItem(itemID);
+	if (itemClassID == Enum.ItemClass.Armor and itemSubClassID == Enum.ItemArmorSubclass.Cosmetic) then return true; end -- C_Transmog.GetItemInfo() doesn't like cosmetic armor
+
+	local isDressable = C_Item.IsDressableItemByID(itemID);
 	-- message(itemID)
 	
 	-- local _, _, canBeSource, noSourceReason = C_Transmog.GetItemInfo(itemID);
@@ -270,16 +271,17 @@ local reqLevelPattern = ITEM_MIN_LEVEL:gsub("%%d", "(%%d+)");
 
 local classArmor;
 if (S.myClass == "ROGUE" or S.myClass == "DRUID" or S.myClass == "MONK" or S.myClass == "DEMONHUNTER") then
-	classArmor = LE_ITEM_ARMOR_LEATHER;
+	classArmor = Enum.ItemArmorSubclass.Leather;
 elseif (S.myClass == "WARRIOR" or S.myClass == "PALADIN" or S.myClass == "DEATHKNIGHT") then
-	classArmor = LE_ITEM_ARMOR_PLATE;
+	classArmor = Enum.ItemArmorSubclass.Plate;
 elseif (S.myClass == "MAGE" or S.myClass == "PRIEST" or S.myClass == "WARLOCK") then
-	classArmor = LE_ITEM_ARMOR_CLOTH;
+	classArmor =  Enum.ItemArmorSubclass.Cloth;
 elseif (S.myClass == "SHAMAN" or S.myClass == "HUNTER") then
-	classArmor = LE_ITEM_ARMOR_MAIL;
+	classArmor = Enum.ItemArmorSubclass.Mail;
 end
 
 local PlayerCanEquip = function(itemLink)
+
 	if (not classArmor) then return false; end
 
 	-- Level
@@ -287,35 +289,50 @@ local PlayerCanEquip = function(itemLink)
 	if (reqLevel > S.myLevel) then return false; end
 
 	-- Armor type
-	if (itemClassID == LE_ITEM_CLASS_ARMOR and (equipSlot ~= "INVTYPE_CLOAK") and (itemSubClassID == LE_ITEM_ARMOR_CLOTH or itemSubClassID == LE_ITEM_ARMOR_LEATHER or itemSubClassID == LE_ITEM_ARMOR_PLATE or itemSubClassID == LE_ITEM_ARMOR_MAIL) and itemSubClassID ~= classArmor) then return false; end
+	if (itemClassID == Enum.ItemClass.Armor and (equipSlot ~= "INVTYPE_CLOAK") and (itemSubClassID ==  Enum.ItemArmorSubclass.Cloth or itemSubClassID == Enum.ItemArmorSubclass.Leather or itemSubClassID == Enum.ItemArmorSubclass.Plate or itemSubClassID == Enum.ItemArmorSubclass.Mail) and itemSubClassID ~= classArmor) then return false; end
 
-	-- Scan tooltip for other restrictions
-	local textL, textR;
+	-- Scan the tooltip for other restrictions.
+	
+	--tooltip:SetHyperlink(itemLink);	
+	
+	itemID = tonumber(itemLink:match("item:(%d+)"))
+	tooltipData = C_TooltipInfo.GetItemByID(itemID);
 
-	tooltip:SetHyperlink(itemLink);
-	for i = tooltip:NumLines(), 1, -1 do
-		-- Left: Class/Race/...
-		textL = tooltip.L[i];
-		if (textL) then
-			local r, g, b = _G[tooltipName.."TextLeft"..i]:GetTextColor();
-			if (r > 0.99 and floor(g * 1000) == 125 and floor(b * 1000) == 125 and not strmatch(textL, durabilityPattern) and not strmatch(textL, reqLevelPattern)) then
-				return false;
+	local lineText;
+
+	for i, line in ipairs(tooltipData.lines) do
+		TooltipUtil.SurfaceArgs(line);
+        for j, arg in ipairs(line.args) do
+			if arg.field == "leftText" then
+				lineText = arg.stringVal;
 			end
-		end
-
-		-- Right: Weapon/Armor type
-		if (itemClassID == LE_ITEM_CLASS_WEAPON or itemClassID == LE_ITEM_CLASS_ARMOR) then
-			textR = tooltip.R[i];
-			if (textR) then
-				local r, g, b = _G[tooltipName.."TextRight"..i]:GetTextColor();
-				if (r > 0.99 and floor(g * 1000) == 125 and floor(b * 1000) == 125 and not strmatch(textR, durabilityPattern)) then
+			if arg.field == "leftColor" then
+				local r = arg.colorVal['r'];
+				local g = arg.colorVal['g'];
+				local b = arg.colorVal['b'];
+				if (r > 0.99 and floor(g * 1000) == 125 and floor(b * 1000) == 125 and not strmatch(lineText, durabilityPattern) and not strmatch(lineText, reqLevelPattern)) then
 					return false;
 				end
 			end
-		end
+
+			if(itemClassID == Enum.ItemClass.Armor or itemClassID == Enum.ItemClass.Weapon) then
+				if arg.field == "rightText" then
+					lineText = arg.stringVal;
+				end
+				if arg.field == "rightColor" then
+					local r = arg.colorVal['r'];
+					local g = arg.colorVal['g'];
+					local b = arg.colorVal['b'];					
+					if (r > 0.99 and floor(g * 1000) == 125 and floor(b * 1000) == 125 and not strmatch(lineText, durabilityPattern)) then 
+						return false;					
+					end
+				end
+			end			
+		end 
 	end
 
 	return true;
+
 end
 
 S.PlayerCanEquip = PlayerCanEquip;
@@ -326,7 +343,8 @@ local ITEM_SOULBOUND, ITEM_ACCOUNTBOUND, ITEM_BIND_TO_BNETACCOUNT, ITEM_BNETACCO
 
 local IsTooltipItemTradable = function(allowBoA)
 	for i = 1, 8 do
-		local text = tooltip.L[i];
+		local text = _G["GameTooltipTextLeft"..i]:GetText();
+
 		if (not allowBoA and (text == ITEM_SOULBOUND or text == ITEM_BIND_ON_PICKUP or text == ITEM_ACCOUNTBOUND or text == ITEM_BIND_TO_BNETACCOUNT or text == ITEM_BNETACCOUNTBOUND)) then
 			return false;
 		elseif (allowBoA) then
@@ -345,7 +363,7 @@ local IsBagItemTradable = function(bag, slot, allowBoA)
 	if (not bag or not slot) then
 		return false;
 	else
-		tooltip:SetBagItem(bag, slot);
+		GameTooltip:SetBagItem(bag, slot);
 		return IsTooltipItemTradable(allowBoA);
 	end
 end
@@ -361,3 +379,8 @@ end
 
 S.IsBagItemTradable = IsBagItemTradable;
 S.IsItemTradable = IsItemTradable;
+
+
+
+
+

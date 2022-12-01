@@ -23,11 +23,9 @@ local addon = S:CreateModule("AppearanceCollector", "SezzUIAppearanceCollector",
 
 -- Lua API
 local strlower, select, tonumber, strfind = string.lower, select, tonumber, string.find;
-
+local SetOverrideBindingClick, ClearOverrideBindings, SetOverrideBindingClick, ClearOverrideBindings;
 -- WoW API/Constants
-local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink, InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo = GetContainerNumSlots, GetContainerItemID, GetContainerItemLink, InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo;
 local SaveEquipmentSet, DeleteEquipmentSet, CreateEquipmentSet, UseEquipmentSet = C_EquipmentSet.SaveEquipmentSet, C_EquipmentSet.DeleteEquipmentSet, C_EquipmentSet.CreateEquipmentSet, C_EquipmentSet.UseEquipmentSet;
-local LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_WEAPON;
 local GameTooltip_Hide = GameTooltip_Hide;
 
 -----------------------------------------------------------------------------
@@ -40,14 +38,16 @@ local showAfterCombat = false;
 -----------------------------------------------------------------------------
 
 local GetNextItem = function()
+	
 	local bag, slot;
 	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local link = GetContainerItemLink(bag, slot);
-
+		for slot = 1, C_Container.GetContainerNumSlots(bag) do
+			local link = C_Container.GetContainerItemLink(bag, slot);
+			
 			if (link and S.ItemIsValidTransmogrifySource(link) and not select(2, S.PlayerHasTransmog(link)) and S.IsBagItemTradable(bag, slot) and S.PlayerCanEquip(link)) then
 				local _, _, _, _, reqLevel, _, _, _, equipSlot, _, _, itemClassID = GetItemInfo(link);
-				if ((itemClassID == LE_ITEM_CLASS_ARMOR or itemClassID == LE_ITEM_CLASS_WEAPON) and (not reqLevel or (reqLevel == 0 and equipSlot == "INVTYPE_BODY") or (reqLevel > 0 and reqLevel <= S.myLevel))) then
+				if ((itemClassID == Enum.ItemClass.Armor or itemClassID == Enum.ItemClass.Weapon) and (not reqLevel or (reqLevel == 0 and equipSlot == "INVTYPE_BODY") or (reqLevel > 0 and reqLevel <= S.myLevel))) then
+					
 					return bag, slot, equipSlot;
 				end
 			end
@@ -98,14 +98,14 @@ addon.Update = function(self, shutdown)
 	local bag, slot, equipSlot = GetNextItem();
 
 	if (not shutdown and bag and slot and equipSlot) then
-		local texture = GetContainerItemInfo(bag, slot);
+		local texture = C_Container.GetContainerItemInfo(bag, slot);
 
 		self.bag = bag;
 		self.slot = slot;
 		self.equipSlot = equipSlot;
 
 		self:SetAttribute("macrotext", "/use "..bag.." "..slot.."\n/click StaticPopup1Button1");
-		self.icon:SetTexture(texture);
+		self.icon:SetTexture(texture.iconFileID);
 	else
 		-- No more items left
 		self.bag = nil;
@@ -201,7 +201,11 @@ addon.OnEnable = function(self)
 		self:SetSize(48, 48);
 		self:SetScript("OnEnter", ShowTooltip);
 		self:SetScript("OnLeave", GameTooltip_Hide);
-		self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		self:SetMouseClickEnabled(true) 
+		self:RegisterForClicks("LeftButtonDown", "RightButtonDown"); --Temp solution until Blizzard fixes bug
+		--https://us.forums.blizzard.com/en/wow/t/dragonflight-click-bindings-broken/1361972/20
+		--self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		
 		self:SetMovable(true);
 		self:RegisterForDrag("LeftButton");
 		self:EnableMouse(true);
@@ -262,7 +266,7 @@ addon.OnDisable = function(self)
 	self:Print(GRAY_FONT_COLOR_CODE.."OFF"..FONT_COLOR_CODE_CLOSE);
 	self:Hide();
 	self:SetAttribute("macrotext", nil);
-	self:UnbindMouseWheel();
+	-- self:UnbindMouseWheel();
 
 	-- Events
 	showAfterCombat = false;
@@ -283,11 +287,11 @@ addon.BindMouseWheel = function(self)
 	return;
 end
 
-addon.UnbindMouseWheel = function(self)
-	ClearOverrideBindings(self);
-end
+-- addon.UnbindMouseWheel = function(self)
+	-- ClearOverrideBindings(self);
+-- end
 
-addon.Toggle = function(self)
+addon.Toggle = function(self)	
 	if (not InCombatLockdown()) then
 		self:SetEnabledState(not self.enabledState);
 	else
@@ -302,7 +306,7 @@ end
 S:RegisterSlashCommand("AC", "/ac", function(args)
 	if (args and args ~= "") then
 		local args = strlower(args);
-
+		
 		if (args == "reset") then
 			addon.DB.anchor = "CENTER";
 			addon.DB.x = 300;

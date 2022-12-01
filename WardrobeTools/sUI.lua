@@ -430,7 +430,7 @@ S.UIParent:RegisterEvent("PLAYER_LOGIN", HandleLevelUp);
 -----------------------------------------------------------------------------
 
 -- Hidden Tooltip for Scanning (Credits: tekkub)
-local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip");
+local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip", nil, "GameTooltipTemplate");
 tt:SetOwner(WorldFrame, "ANCHOR_NONE");
 
 local lcache, rcache = {}, {};

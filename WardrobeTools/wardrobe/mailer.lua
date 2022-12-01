@@ -25,116 +25,118 @@ local addon = S:CreateModule("AppearanceMailer"):AddDefaultHandlers();
 local select, strlen, tinsert, tremove, strlower, next = select, string.len, table.insert, table.remove, string.lower, next;
 
 -- WoW API
-local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, PickupContainerItem, ClickSendMailItemButton, SendMail, GetItemInfo = GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, PickupContainerItem, ClickSendMailItemButton, SendMail, GetItemInfo;
-local ATTACHMENTS_MAX_SEND, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_GUNS, LE_ITEM_ARMOR_SHIELD, LE_ITEM_ARMOR_GENERIC, INVTYPE_RANGED, INVTYPE_HOLDABLE = ATTACHMENTS_MAX_SEND, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_GUNS, LE_ITEM_ARMOR_SHIELD, LE_ITEM_ARMOR_GENERIC, INVTYPE_RANGED, INVTYPE_HOLDABLE;
+local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, ClickSendMailItemButton, SendMail, GetItemInfo = GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, ClickSendMailItemButton, SendMail, GetItemInfo;
+local INVTYPE_RANGED, INVTYPE_HOLDABLE = ATTACHMENTS_MAX_SEND;
 
+
+-- Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Cloth, Enum.ItemArmorSubclass.Leather, Enum.ItemArmorSubclass.Mail, Enum.ItemArmorSubclass.Plate, Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Axe1H, Enum.ItemWeaponSubclass.Axe2H, Enum.ItemWeaponSubclass.Mace1H, Enum.ItemWeaponSubclass.Mace2H, Enum.ItemWeaponSubclass.Sword1H, Enum.ItemWeaponSubclass.Sword2H, Enum.ItemWeaponSubclass.Warglaive, Enum.ItemWeaponSubclass.Dagger, Enum.ItemWeaponSubclass.Unarmed, Enum.ItemWeaponSubclass.Polearm, Enum.ItemWeaponSubclass.Staff, Enum.ItemWeaponSubclass.Wand, Enum.ItemWeaponSubclass.Bows, Enum.ItemWeaponSubclass.Crossbow, Enum.ItemWeaponSubclass.Guns, Enum.ItemArmorSubclass.Shield, Enum.ItemArmorSubclass.Generic, INVTYPE_RANGED, INVTYPE_HOLDABLE = ATTACHMENTS_MAX_SEND, Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Cloth, Enum.ItemArmorSubclass.Leather, Enum.ItemArmorSubclass.Mail, Enum.ItemArmorSubclass.Plate, Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Axe1H, Enum.ItemWeaponSubclass.Axe2H, Enum.ItemWeaponSubclass.Mace1H, Enum.ItemWeaponSubclass.Mace2H, Enum.ItemWeaponSubclass.Sword1H, Enum.ItemWeaponSubclass.Sword2H, Enum.ItemWeaponSubclass.Warglaive, Enum.ItemWeaponSubclass.Dagger, Enum.ItemWeaponSubclass.Unarmed, Enum.ItemWeaponSubclass.Polearm, Enum.ItemWeaponSubclass.Staff, Enum.ItemWeaponSubclass.Wand, Enum.ItemWeaponSubclass.Bows, Enum.ItemWeaponSubclass.Crossbow, Enum.ItemWeaponSubclass.Guns, Enum.ItemArmorSubclass.Shield, Enum.ItemArmorSubclass.Generic,
 -----------------------------------------------------------------------------
 -- BoA armor tokens
 -----------------------------------------------------------------------------
 
 local BoAArmorTokens = {
-	[127777] = LE_ITEM_ARMOR_CLOTH,
-	[127778] = LE_ITEM_ARMOR_CLOTH,
-	[127779] = LE_ITEM_ARMOR_CLOTH,
-	[127780] = LE_ITEM_ARMOR_CLOTH,
-	[127781] = LE_ITEM_ARMOR_CLOTH,
-	[127782] = LE_ITEM_ARMOR_CLOTH,
-	[127783] = LE_ITEM_ARMOR_CLOTH,
-	[127784] = LE_ITEM_ARMOR_CLOTH,
-	[128803] = LE_ITEM_ARMOR_CLOTH,
-	[127790] = LE_ITEM_ARMOR_LEATHER,
-	[127791] = LE_ITEM_ARMOR_LEATHER,
-	[127792] = LE_ITEM_ARMOR_LEATHER,
-	[127793] = LE_ITEM_ARMOR_LEATHER,
-	[127794] = LE_ITEM_ARMOR_LEATHER,
-	[127795] = LE_ITEM_ARMOR_LEATHER,
-	[127796] = LE_ITEM_ARMOR_LEATHER,
-	[127797] = LE_ITEM_ARMOR_LEATHER,
-	[128803] = LE_ITEM_ARMOR_LEATHER,
-	[127803] = LE_ITEM_ARMOR_MAIL,
-	[127804] = LE_ITEM_ARMOR_MAIL,
-	[127805] = LE_ITEM_ARMOR_MAIL,
-	[127806] = LE_ITEM_ARMOR_MAIL,
-	[127807] = LE_ITEM_ARMOR_MAIL,
-	[127808] = LE_ITEM_ARMOR_MAIL,
-	[127809] = LE_ITEM_ARMOR_MAIL,
-	[127810] = LE_ITEM_ARMOR_MAIL,
-	[128803] = LE_ITEM_ARMOR_MAIL,
-	[127816] = LE_ITEM_ARMOR_PLATE,
-	[127817] = LE_ITEM_ARMOR_PLATE,
-	[127818] = LE_ITEM_ARMOR_PLATE,
-	[127819] = LE_ITEM_ARMOR_PLATE,
-	[127820] = LE_ITEM_ARMOR_PLATE,
-	[127821] = LE_ITEM_ARMOR_PLATE,
-	[127822] = LE_ITEM_ARMOR_PLATE,
-	[127823] = LE_ITEM_ARMOR_PLATE,
-	[128803] = LE_ITEM_ARMOR_PLATE,
+	[127777] = Enum.ItemArmorSubclass.Cloth,
+	[127778] = Enum.ItemArmorSubclass.Cloth,
+	[127779] = Enum.ItemArmorSubclass.Cloth,
+	[127780] = Enum.ItemArmorSubclass.Cloth,
+	[127781] = Enum.ItemArmorSubclass.Cloth,
+	[127782] = Enum.ItemArmorSubclass.Cloth,
+	[127783] = Enum.ItemArmorSubclass.Cloth,
+	[127784] = Enum.ItemArmorSubclass.Cloth,
+	[128803] = Enum.ItemArmorSubclass.Cloth,
+	[127790] = Enum.ItemArmorSubclass.Leather,
+	[127791] = Enum.ItemArmorSubclass.Leather,
+	[127792] = Enum.ItemArmorSubclass.Leather,
+	[127793] = Enum.ItemArmorSubclass.Leather,
+	[127794] = Enum.ItemArmorSubclass.Leather,
+	[127795] = Enum.ItemArmorSubclass.Leather,
+	[127796] = Enum.ItemArmorSubclass.Leather,
+	[127797] = Enum.ItemArmorSubclass.Leather,
+	[128803] = Enum.ItemArmorSubclass.Leather,
+	[127803] = Enum.ItemArmorSubclass.Mail,
+	[127804] = Enum.ItemArmorSubclass.Mail,
+	[127805] = Enum.ItemArmorSubclass.Mail,
+	[127806] = Enum.ItemArmorSubclass.Mail,
+	[127807] = Enum.ItemArmorSubclass.Mail,
+	[127808] = Enum.ItemArmorSubclass.Mail,
+	[127809] = Enum.ItemArmorSubclass.Mail,
+	[127810] = Enum.ItemArmorSubclass.Mail,
+	[128803] = Enum.ItemArmorSubclass.Mail,
+	[127816] = Enum.ItemArmorSubclass.Plate,
+	[127817] = Enum.ItemArmorSubclass.Plate,
+	[127818] = Enum.ItemArmorSubclass.Plate,
+	[127819] = Enum.ItemArmorSubclass.Plate,
+	[127820] = Enum.ItemArmorSubclass.Plate,
+	[127821] = Enum.ItemArmorSubclass.Plate,
+	[127822] = Enum.ItemArmorSubclass.Plate,
+	[127823] = Enum.ItemArmorSubclass.Plate,
+	[128803] = Enum.ItemArmorSubclass.Plate,
 	-- Timeless
-	[102288] = LE_ITEM_ARMOR_CLOTH,
-	[102284] = LE_ITEM_ARMOR_CLOTH,
-	[102290] = LE_ITEM_ARMOR_CLOTH,
-	[102287] = LE_ITEM_ARMOR_CLOTH,
-	[102289] = LE_ITEM_ARMOR_CLOTH,
-	[102321] = LE_ITEM_ARMOR_CLOTH,
-	[102286] = LE_ITEM_ARMOR_CLOTH,
-	[102285] = LE_ITEM_ARMOR_CLOTH,
-	[102282] = LE_ITEM_ARMOR_LEATHER,
-	[102277] = LE_ITEM_ARMOR_LEATHER,
-	[102280] = LE_ITEM_ARMOR_LEATHER,
-	[102278] = LE_ITEM_ARMOR_LEATHER,
-	[102283] = LE_ITEM_ARMOR_LEATHER,
-	[102279] = LE_ITEM_ARMOR_LEATHER,
-	[102281] = LE_ITEM_ARMOR_LEATHER,
-	[102322] = LE_ITEM_ARMOR_LEATHER,
-	[102270] = LE_ITEM_ARMOR_MAIL,
-	[102273] = LE_ITEM_ARMOR_MAIL,
-	[102275] = LE_ITEM_ARMOR_MAIL,
-	[102272] = LE_ITEM_ARMOR_MAIL,
-	[102276] = LE_ITEM_ARMOR_MAIL,
-	[102271] = LE_ITEM_ARMOR_MAIL,
-	[102274] = LE_ITEM_ARMOR_MAIL,
-	[102323] = LE_ITEM_ARMOR_MAIL,
-	[102266] = LE_ITEM_ARMOR_PLATE,
-	[102263] = LE_ITEM_ARMOR_PLATE,
-	[102268] = LE_ITEM_ARMOR_PLATE,
-	[102269] = LE_ITEM_ARMOR_PLATE,
-	[102265] = LE_ITEM_ARMOR_PLATE,
-	[102267] = LE_ITEM_ARMOR_PLATE,
-	[102264] = LE_ITEM_ARMOR_PLATE,
-	[102320] = LE_ITEM_ARMOR_PLATE,
+	[102288] = Enum.ItemArmorSubclass.Cloth,
+	[102284] = Enum.ItemArmorSubclass.Cloth,
+	[102290] = Enum.ItemArmorSubclass.Cloth,
+	[102287] = Enum.ItemArmorSubclass.Cloth,
+	[102289] = Enum.ItemArmorSubclass.Cloth,
+	[102321] = Enum.ItemArmorSubclass.Cloth,
+	[102286] = Enum.ItemArmorSubclass.Cloth,
+	[102285] = Enum.ItemArmorSubclass.Cloth,
+	[102282] = Enum.ItemArmorSubclass.Leather,
+	[102277] = Enum.ItemArmorSubclass.Leather,
+	[102280] = Enum.ItemArmorSubclass.Leather,
+	[102278] = Enum.ItemArmorSubclass.Leather,
+	[102283] = Enum.ItemArmorSubclass.Leather,
+	[102279] = Enum.ItemArmorSubclass.Leather,
+	[102281] = Enum.ItemArmorSubclass.Leather,
+	[102322] = Enum.ItemArmorSubclass.Leather,
+	[102270] = Enum.ItemArmorSubclass.Mail,
+	[102273] = Enum.ItemArmorSubclass.Mail,
+	[102275] = Enum.ItemArmorSubclass.Mail,
+	[102272] = Enum.ItemArmorSubclass.Mail,
+	[102276] = Enum.ItemArmorSubclass.Mail,
+	[102271] = Enum.ItemArmorSubclass.Mail,
+	[102274] = Enum.ItemArmorSubclass.Mail,
+	[102323] = Enum.ItemArmorSubclass.Mail,
+	[102266] = Enum.ItemArmorSubclass.Plate,
+	[102263] = Enum.ItemArmorSubclass.Plate,
+	[102268] = Enum.ItemArmorSubclass.Plate,
+	[102269] = Enum.ItemArmorSubclass.Plate,
+	[102265] = Enum.ItemArmorSubclass.Plate,
+	[102267] = Enum.ItemArmorSubclass.Plate,
+	[102264] = Enum.ItemArmorSubclass.Plate,
+	[102320] = Enum.ItemArmorSubclass.Plate,
 		-- Unsullied
-	[152734] = LE_ITEM_ARMOR_CLOTH,
-	[152738] = LE_ITEM_ARMOR_CLOTH,
-	[152742] = LE_ITEM_ARMOR_CLOTH,
-	[153135] = LE_ITEM_ARMOR_CLOTH,
-	[153141] = LE_ITEM_ARMOR_CLOTH,
-	[153144] = LE_ITEM_ARMOR_CLOTH,
-	[153154] = LE_ITEM_ARMOR_CLOTH,
-	[153156] = LE_ITEM_ARMOR_CLOTH,
-	[152737] = LE_ITEM_ARMOR_LEATHER,
-	[153136] = LE_ITEM_ARMOR_LEATHER,
-	[153139] = LE_ITEM_ARMOR_LEATHER,
-	[153142] = LE_ITEM_ARMOR_LEATHER,
-	[153145] = LE_ITEM_ARMOR_LEATHER,
-	[153148] = LE_ITEM_ARMOR_LEATHER,
-	[152739] = LE_ITEM_ARMOR_LEATHER,
-	[153151] = LE_ITEM_ARMOR_LEATHER,
-	[152741] = LE_ITEM_ARMOR_MAIL,
-	[152744] = LE_ITEM_ARMOR_MAIL,
-	[153137] = LE_ITEM_ARMOR_MAIL,
-	[153138] = LE_ITEM_ARMOR_MAIL,
-	[153147] = LE_ITEM_ARMOR_MAIL,
-	[153149] = LE_ITEM_ARMOR_MAIL,
-	[153152] = LE_ITEM_ARMOR_MAIL,
-	[153158] = LE_ITEM_ARMOR_MAIL,
-	[152743] = LE_ITEM_ARMOR_PLATE,
-	[153140] = LE_ITEM_ARMOR_PLATE,
-	[153143] = LE_ITEM_ARMOR_PLATE,
-	[153146] = LE_ITEM_ARMOR_PLATE,
-	[153150] = LE_ITEM_ARMOR_PLATE,
-	[153153] = LE_ITEM_ARMOR_PLATE,
-	[153155] = LE_ITEM_ARMOR_PLATE,
-	[153157] = LE_ITEM_ARMOR_PLATE,
+	[152734] = Enum.ItemArmorSubclass.Cloth,
+	[152738] = Enum.ItemArmorSubclass.Cloth,
+	[152742] = Enum.ItemArmorSubclass.Cloth,
+	[153135] = Enum.ItemArmorSubclass.Cloth,
+	[153141] = Enum.ItemArmorSubclass.Cloth,
+	[153144] = Enum.ItemArmorSubclass.Cloth,
+	[153154] = Enum.ItemArmorSubclass.Cloth,
+	[153156] = Enum.ItemArmorSubclass.Cloth,
+	[152737] = Enum.ItemArmorSubclass.Leather,
+	[153136] = Enum.ItemArmorSubclass.Leather,
+	[153139] = Enum.ItemArmorSubclass.Leather,
+	[153142] = Enum.ItemArmorSubclass.Leather,
+	[153145] = Enum.ItemArmorSubclass.Leather,
+	[153148] = Enum.ItemArmorSubclass.Leather,
+	[152739] = Enum.ItemArmorSubclass.Leather,
+	[153151] = Enum.ItemArmorSubclass.Leather,
+	[152741] = Enum.ItemArmorSubclass.Mail,
+	[152744] = Enum.ItemArmorSubclass.Mail,
+	[153137] = Enum.ItemArmorSubclass.Mail,
+	[153138] = Enum.ItemArmorSubclass.Mail,
+	[153147] = Enum.ItemArmorSubclass.Mail,
+	[153149] = Enum.ItemArmorSubclass.Mail,
+	[153152] = Enum.ItemArmorSubclass.Mail,
+	[153158] = Enum.ItemArmorSubclass.Mail,
+	[152743] = Enum.ItemArmorSubclass.Plate,
+	[153140] = Enum.ItemArmorSubclass.Plate,
+	[153143] = Enum.ItemArmorSubclass.Plate,
+	[153146] = Enum.ItemArmorSubclass.Plate,
+	[153150] = Enum.ItemArmorSubclass.Plate,
+	[153153] = Enum.ItemArmorSubclass.Plate,
+	[153155] = Enum.ItemArmorSubclass.Plate,
+	[153157] = Enum.ItemArmorSubclass.Plate,
 };
 
 -----------------------------------------------------------------------------
@@ -345,9 +347,9 @@ local SaveSettings = function()
 		end
 	end
 
-	-- Whoever is able to use LE_ITEM_WEAPON_BOWS can also use LE_ITEM_WEAPON_CROSSBOW + LE_ITEM_WEAPON_GUNS
-	addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_CROSSBOW] = addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_BOWS];
-	addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_GUNS] = addon.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON][LE_ITEM_WEAPON_BOWS];
+	-- Whoever is able to use Enum.ItemWeaponSubclass.Bows can also use Enum.ItemWeaponSubclass.Crossbow + Enum.ItemWeaponSubclass.Guns
+	addon.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = addon.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows];
+	addon.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = addon.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows];
 end
 
 local SettingsFrame_OnShow = function(self)
@@ -381,34 +383,34 @@ local CreateSettingsFrame = function()
 	title:SetText("WardrobeTools Settings");
 
 	-- Armor
-	CreateSettingsHeader(LE_ITEM_CLASS_ARMOR);
-	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH);
-	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_LEATHER);
-	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_MAIL);
-	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_PLATE);
+	CreateSettingsHeader(Enum.ItemClass.Armor);
+	CreateSettingsEditBox(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Cloth);
+	CreateSettingsEditBox(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Leather);
+	CreateSettingsEditBox(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Mail);
+	CreateSettingsEditBox(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Plate);
 	CreateSettingsCheckBox("sendAllBoEs", "Also mail acquired appearances");
 	CreateSettingsCheckBox("includeBoAArmorTokens", "Include BoA Armor Tokens");
 
 	-- Weapons
-	CreateSettingsHeader(LE_ITEM_CLASS_WEAPON);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE2H);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_MACE1H);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_MACE2H);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_SWORD1H);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_SWORD2H);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_WARGLAIVE);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_DAGGER);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_UNARMED);
+	CreateSettingsHeader(Enum.ItemClass.Weapon);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Axe1H);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Axe2H);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Mace1H);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Mace2H);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Sword1H);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Sword2H);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Warglaive);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Dagger);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Unarmed);
 
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_POLEARM);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_STAFF);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Polearm);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Staff);
 
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_WAND);
-	CreateSettingsEditBox(LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_BOWS, INVTYPE_RANGED);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Wand);
+	CreateSettingsEditBox(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Bows);
 
-	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_SHIELD);
-	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, INVTYPE_HOLDABLE);
+	CreateSettingsEditBox(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Shield);
+	CreateSettingsEditBox(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Generic, INVTYPE_HOLDABLE);
 
 	--TSM 
 
@@ -470,7 +472,7 @@ local SendButton_ShowTooltip = function(self)
 						GameTooltip:AddLine(strupper(recipient), 1, 1, 1);
 
 						for _, t in pairs(items) do
-							GameTooltip:AddLine(GetContainerItemLink(t[1], t[2]));
+							GameTooltip:AddLine(C_Container.GetContainerItemLink(t[1], t[2]));
 						end
 					end
 
@@ -512,7 +514,7 @@ local SendButton_ShowTooltip = function(self)
 				GameTooltip:AddLine(strupper(recipient), 1, 1, 1);
 
 				for _, t in pairs(items) do
-					GameTooltip:AddLine(GetContainerItemLink(t[1], t[2]));
+					GameTooltip:AddLine(C_Container.GetContainerItemLink(t[1], t[2]));
 				end
 			end
 
@@ -632,12 +634,15 @@ addon.InitializeProfile = function(self)
 		self.ADB.recipients[S.myRealm][S.myFactionGroup] = {};
 	end
 
-	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_ARMOR]) then
-		self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_ARMOR] = {};
+	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Armor]) then
+		print(Enum.ItemClass.Armor);
+		self.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Armor] = {};
 	end
 
-	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON]) then
-		self.ADB.recipients[S.myRealm][S.myFactionGroup][LE_ITEM_CLASS_WEAPON] = {};
+	if (not self.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Weapon]) then
+
+		self.ADB.recipients[S.myRealm][S.myFactionGroup][Enum.ItemClass.Weapon] = {};
+
 	end
 
 	if (not self.ADB.TSM) then
@@ -782,9 +787,9 @@ addon.QueueMails = function(self, displayOnly)
 
 		local bag, slot;
 		for bag = 0, 4 do
-			for slot = 1, GetContainerNumSlots(bag) do
-				local itemID = GetContainerItemID(bag, slot);
-				local itemLink = GetContainerItemLink(bag, slot);
+			for slot = 1, C_Container.GetContainerNumSlots(bag) do
+				local itemID = C_Container.GetContainerItemID(bag, slot);
+				local itemLink = C_Container.GetContainerItemLink(bag, slot);
 				local TSMgreenlight = false;
 				
 				if (itemID and itemLink) then
@@ -793,10 +798,10 @@ addon.QueueMails = function(self, displayOnly)
 					if (name) then
 						if (includeBoAArmorTokens and string.find(name, "Unsullied")) then
 							itemSubClassID = BoAArmorTokens[itemID]
-							itemClassID = LE_ITEM_CLASS_ARMOR
+							itemClassID = Enum.ItemClass.Armor
 						end
 
-						if (includeBoAArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and BoAArmorTokens[itemID]) then
+						if (includeBoAArmorTokens and itemClassID == Enum.ItemClass.Armor and itemSubClassID == Enum.ItemArmorSubclass.Generic and BoAArmorTokens[itemID]) then
 							itemSubClassID = BoAArmorTokens[itemID];
 						end
 						
@@ -827,10 +832,10 @@ addon.QueueMails = function(self, displayOnly)
 						local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID] and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID]) or nil);
 						
 						if (TSMgreenlight and (not TSMerror) and quality >= 2 and quality ~= 7 and recipient and recipient ~= myName and recipient ~= myNameFull
-							and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
+							and (not (itemClassID == Enum.ItemClass.Armor and itemSubClassID == Enum.ItemArmorSubclass.Generic) or (itemClassID == Enum.ItemClass.Armor and itemSubClassID == Enum.ItemArmorSubclass.Generic and equipSlot == "INVTYPE_HOLDABLE"))
 							and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBoAArmorTokens)) then
-							-- LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC is used for offhands and jewelery and propably more, filtering it by using INVTYPE_HOLDABLE
 
+							-- Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Generic is used for offhands and jewelery and propably more, filtering it by using INVTYPE_HOLDABLE
 							if (not queue[recipient]) then
 								queue[recipient] = {};
 							end
@@ -873,7 +878,7 @@ addon.ProcessQueue = function(self)
 			local item = tremove(items);
 
 			ClearCursor();
-			PickupContainerItem(item[1], item[2]);
+			C_Container.PickupContainerItem(item[1], item[2]);
 			ClickSendMailItemButton(index);
 			index = index + 1;
 		end
