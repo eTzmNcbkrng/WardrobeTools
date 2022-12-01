@@ -293,7 +293,7 @@ local PlayerCanEquip = function(itemLink)
 
 	-- Scan the tooltip for other restrictions.
 	
-	--tooltip:SetHyperlink(itemLink);	
+	tooltip:SetHyperlink(itemLink);	
 	
 	itemID = tonumber(itemLink:match("item:(%d+)"))
 	tooltipData = C_TooltipInfo.GetItemByID(itemID);
@@ -341,17 +341,22 @@ S.PlayerCanEquip = PlayerCanEquip;
 
 local ITEM_SOULBOUND, ITEM_ACCOUNTBOUND, ITEM_BIND_TO_BNETACCOUNT, ITEM_BNETACCOUNTBOUND, ITEM_BIND_ON_PICKUP = ITEM_SOULBOUND, ITEM_ACCOUNTBOUND, ITEM_BIND_TO_BNETACCOUNT, ITEM_BNETACCOUNTBOUND, ITEM_BIND_ON_PICKUP;
 
-local IsTooltipItemTradable = function(allowBoA)
-	for i = 1, 8 do
-		local text = _G["GameTooltipTextLeft"..i]:GetText();
+local IsTooltipItemTradable = function(tooltipData, allowBoA)
 
-		if (not allowBoA and (text == ITEM_SOULBOUND or text == ITEM_BIND_ON_PICKUP or text == ITEM_ACCOUNTBOUND or text == ITEM_BIND_TO_BNETACCOUNT or text == ITEM_BNETACCOUNTBOUND)) then
-			return false;
-		elseif (allowBoA) then
-			if (text == ITEM_SOULBOUND or text == ITEM_BIND_ON_PICKUP) then
-				return false;
-			elseif (text == ITEM_ACCOUNTBOUND or text == ITEM_BIND_TO_BNETACCOUNT or text == ITEM_BNETACCOUNTBOUND) then
-				return true;
+	for i, line in ipairs(tooltipData.lines) do
+		TooltipUtil.SurfaceArgs(line);
+        for j, arg in ipairs(line.args) do
+			if arg.field == "leftText" or arg.field == "rightText" then
+				lineText = arg.stringVal;
+				if (not allowBoA and (lineText == ITEM_SOULBOUND or lineText == ITEM_BIND_ON_PICKUP or lineText == ITEM_ACCOUNTBOUND or lineText == ITEM_BIND_TO_BNETACCOUNT or lineText == ITEM_BNETACCOUNTBOUND)) then
+					return false;
+				elseif (allowBoA) then
+					if (lineText == ITEM_SOULBOUND or lineText == ITEM_BIND_ON_PICKUP) then
+						return false;
+					elseif (lineText == ITEM_ACCOUNTBOUND or lineText == ITEM_BIND_TO_BNETACCOUNT or lineText == ITEM_BNETACCOUNTBOUND) then
+						return true;
+					end
+				end
 			end
 		end
 	end
@@ -363,8 +368,9 @@ local IsBagItemTradable = function(bag, slot, allowBoA)
 	if (not bag or not slot) then
 		return false;
 	else
-		GameTooltip:SetBagItem(bag, slot);
-		return IsTooltipItemTradable(allowBoA);
+		--GameTooltip:SetBagItem(bag, slot);
+		tooltipData = C_TooltipInfo.GetBagItem(bag, slot);		
+		return IsTooltipItemTradable(tooltipData, allowBoA);
 	end
 end
 
@@ -379,8 +385,3 @@ end
 
 S.IsBagItemTradable = IsBagItemTradable;
 S.IsItemTradable = IsItemTradable;
-
-
-
-
-

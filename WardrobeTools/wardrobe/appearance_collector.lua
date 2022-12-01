@@ -27,6 +27,11 @@ local SetOverrideBindingClick, ClearOverrideBindings, SetOverrideBindingClick, C
 -- WoW API/Constants
 local SaveEquipmentSet, DeleteEquipmentSet, CreateEquipmentSet, UseEquipmentSet = C_EquipmentSet.SaveEquipmentSet, C_EquipmentSet.DeleteEquipmentSet, C_EquipmentSet.CreateEquipmentSet, C_EquipmentSet.UseEquipmentSet;
 local GameTooltip_Hide = GameTooltip_Hide;
+local LE_ITEM_CLASS_ARMOR = Enum.ItemClass.Armor;
+local LE_ITEM_CLASS_WEAPON = Enum.ItemClass.Weapon;
+local GetContainerNumSlots = C_Container.GetContainerNumSlots;
+local GetContainerItemLink = C_Container.GetContainerItemLink;
+local GetContainerItemID = C_Container.GetContainerItemID;
 
 -----------------------------------------------------------------------------
 
@@ -41,13 +46,13 @@ local GetNextItem = function()
 	
 	local bag, slot;
 	for bag = 0, 4 do
-		for slot = 1, C_Container.GetContainerNumSlots(bag) do
-			local link = C_Container.GetContainerItemLink(bag, slot);
+		for slot = 1, GetContainerNumSlots(bag) do
+			local link = GetContainerItemLink(bag, slot);
 			
 			if (link and S.ItemIsValidTransmogrifySource(link) and not select(2, S.PlayerHasTransmog(link)) and S.IsBagItemTradable(bag, slot) and S.PlayerCanEquip(link)) then
 				local _, _, _, _, reqLevel, _, _, _, equipSlot, _, _, itemClassID = GetItemInfo(link);
 				if ((itemClassID == Enum.ItemClass.Armor or itemClassID == Enum.ItemClass.Weapon) and (not reqLevel or (reqLevel == 0 and equipSlot == "INVTYPE_BODY") or (reqLevel > 0 and reqLevel <= S.myLevel))) then
-					
+					--tooltip:SetBagItem(bag, slot);
 					return bag, slot, equipSlot;
 				end
 			end
@@ -59,6 +64,7 @@ local ShowTooltip = function(self)
 	GameTooltip:SetOwner(self, "ANCHOR_TOP");
 
 	if (self.bag and self.slot) then
+		C_CVar.SetCVar("missingTransmogSourceInItemTooltips", "1")
 		GameTooltip:SetBagItem(self.bag, self.slot);
 	else
 		GameTooltip:AddLine("Close AppearanceCollector", 1, 1, 1);
