@@ -1,4 +1,4 @@
---[[ 
+--[[
 
 	Martin Karer / Sezz, 2016
 	Adds known/unknown information to all item tooltips
@@ -77,11 +77,15 @@ local OnTooltipSetItemHook = function(self)
 	end
 end
 
-for _, tt in pairs({ GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2, ShoppingTooltip1, ShoppingTooltip2, AtlasLootTooltip }) do
-	if (tt) then
-		tt:HookScript("OnTooltipSetItem", OnTooltipSetItemHook);
+
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip)
+	if not tooltip then return end
+	for _, tt in pairs({ GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2, ShoppingTooltip1, ShoppingTooltip2, AtlasLootTooltip }) do
+		if tooltip == tt then
+			OnTooltipSetItemHook(tooltip)
+		end
 	end
-end
+end)
 
 -- Enable additional Blizzard text
 --C_TransmogCollection.SetShowMissingSourceInItemTooltips(true);

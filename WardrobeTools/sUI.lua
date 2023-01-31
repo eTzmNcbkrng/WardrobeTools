@@ -1,4 +1,4 @@
---[[ 
+--[[
 
 	Martin Karer / Sezz, 2008-2016
 	sUI Methods
@@ -103,7 +103,7 @@ end
 -- UI
 -----------------------------------------------------------------------------
 
-S.UIParent = CreateFrame("Frame", "SezzUIParent", UIParent);
+S.UIParent = CreateFrame("Frame", "SezzUIParent", UIParent, BackdropTemplateMixin and "BackdropTemplate");
 S.UIParent:SetAllPoints(UIParent);
 
 S.Scale = function(self, i)
@@ -199,7 +199,7 @@ local initializeSavedVariables = function(self, tableName)
 			DB[self.debugName] = {};
 		end
 	end
-	
+
 	return DB;
 end
 
@@ -228,7 +228,7 @@ local moduleSettingsLoadUser = function(self, includeAccountDB)
 
 	-- apply metatable
 	setmetatable(self.DB, {
-		__index = function(t, k) 
+		__index = function(t, k)
 			return rawget(t, k) or C.modules[self.debugName][k];
 		end
 	});
@@ -255,7 +255,7 @@ end
 local moduleSetEnabledState = function(self, state)
 	if (self.enabledState ~= state) then
 		self.enabledState = state;
-	
+
 		if (state and self.OnEnable) then
 			self:OnEnable();
 		elseif (not state and self.OnDisable) then
@@ -402,7 +402,7 @@ S.UIParent:RegisterEvent("ADDON_LOADED", function(self, event, loadedAddonName)
 		if (tableCDB and not _G[tableCDB]) then
 			_G[tableCDB] = {};
 		end
-		
+
 		-- Initializate modules
 		for moduleName, module in pairs(S.modules) do
 			if (module.OnInitialize and not module.__OnInitializeCalled) then
@@ -430,7 +430,8 @@ S.UIParent:RegisterEvent("PLAYER_LOGIN", HandleLevelUp);
 -----------------------------------------------------------------------------
 
 -- Hidden Tooltip for Scanning (Credits: tekkub)
-local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip");
+--local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip");
+local tt = CreateFrame("GameTooltip", "SezzUIScanningTooltip", UIParent, "GameTooltipTemplate");
 tt:SetOwner(WorldFrame, "ANCHOR_NONE");
 
 local lcache, rcache = {}, {};

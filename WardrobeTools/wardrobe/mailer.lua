@@ -1,8 +1,8 @@
---[[ 
+--[[
 
 	Martin Karer / Sezz, 2016
 	Wardrobe BoE mailer
-	
+
 --]]
 
 if (IsTrialAccount() or IsRestrictedAccount()) then return; end -- Mail is disabled for Trial accounts.
@@ -25,8 +25,56 @@ local addon = S:CreateModule("AppearanceMailer"):AddDefaultHandlers();
 local select, strlen, tinsert, tremove, strlower, next = select, string.len, table.insert, table.remove, string.lower, next;
 
 -- WoW API
-local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, PickupContainerItem, ClickSendMailItemButton, SendMail, GetItemInfo = GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, PickupContainerItem, ClickSendMailItemButton, SendMail, GetItemInfo;
-local ATTACHMENTS_MAX_SEND, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_GUNS, LE_ITEM_ARMOR_SHIELD, LE_ITEM_ARMOR_GENERIC, INVTYPE_RANGED, INVTYPE_HOLDABLE = ATTACHMENTS_MAX_SEND, LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_CLOTH, LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_CLASS_WEAPON, LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_GUNS, LE_ITEM_ARMOR_SHIELD, LE_ITEM_ARMOR_GENERIC, INVTYPE_RANGED, INVTYPE_HOLDABLE;
+local GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, ClickSendMailItemButton, SendMail, GetItemInfo = GetItemClassInfo, GetItemSubClassInfo, GameTooltip_Hide, ClearCursor, ClickSendMailItemButton, SendMail, GetItemInfo;
+
+
+local GetContainerItemID = GetContainerItemID or (C_Container and C_Container.GetContainerItemID)
+local GetContainerItemLink = GetContainerItemLink or (C_Container and C_Container.GetContainerItemLink)
+local GetContainerNumSlots = GetContainerNumSlots or (C_Container and C_Container.GetContainerNumSlots)
+local PickupContainerItem = PickupContainerItem or (C_Container and C_Container.PickupContainerItem)
+
+local ATTACHMENTS_MAX_SEND = ATTACHMENTS_MAX_SEND
+local INVTYPE_RANGED = INVTYPE_RANGED
+local INVTYPE_HOLDABLE = INVTYPE_HOLDABLE
+
+-- Armor
+local LE_ITEM_CLASS_ARMOR = LE_ITEM_CLASS_ARMOR or Enum.ItemClass.Armor or 4
+local LE_ITEM_ARMOR_GENERIC = LE_ITEM_ARMOR_GENERIC or Enum.ItemArmorSubclass.Generic or 0
+local LE_ITEM_ARMOR_CLOTH = LE_ITEM_ARMOR_CLOTH or Enum.ItemArmorSubclass.Cloth or 1
+local LE_ITEM_ARMOR_LEATHER = LE_ITEM_ARMOR_LEATHER or Enum.ItemArmorSubclass.Leather or 2
+local LE_ITEM_ARMOR_MAIL = LE_ITEM_ARMOR_MAIL or Enum.ItemArmorSubclass.Mail or 3
+local LE_ITEM_ARMOR_PLATE = LE_ITEM_ARMOR_PLATE or Enum.ItemArmorSubclass.Plate or 4
+local LE_ITEM_ARMOR_COSMETIC = LE_ITEM_ARMOR_COSMETIC or Enum.ItemArmorSubclass.Cosmetic or 5
+local LE_ITEM_ARMOR_SHIELD = LE_ITEM_ARMOR_SHIELD or Enum.ItemArmorSubclass.Shield or 6
+local LE_ITEM_ARMOR_LIBRAM = LE_ITEM_ARMOR_LIBRAM or Enum.ItemArmorSubclass.Libram or 7
+local LE_ITEM_ARMOR_IDOL = LE_ITEM_ARMOR_IDOL or Enum.ItemArmorSubclass.Idol or 8
+local LE_ITEM_ARMOR_TOTEM = LE_ITEM_ARMOR_TOTEM or Enum.ItemArmorSubclass.Totem or 9
+local LE_ITEM_ARMOR_SIGIL = LE_ITEM_ARMOR_SIGIL or Enum.ItemArmorSubclass.Sigil or 10
+local LE_ITEM_ARMOR_RELIC = LE_ITEM_ARMOR_RELIC or Enum.ItemArmorSubclass.Relic or 11
+
+-- Weapons
+local LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON or Enum.ItemClass.Weapon or 2
+local LE_ITEM_WEAPON_AXE1H = LE_ITEM_WEAPON_AXE1H or Enum.ItemWeaponSubclass.Axe1H or 0
+local LE_ITEM_WEAPON_AXE2H = LE_ITEM_WEAPON_AXE2H or Enum.ItemWeaponSubclass.Axe2H or 1
+local LE_ITEM_WEAPON_BOWS = LE_ITEM_WEAPON_BOWS or Enum.ItemWeaponSubclass.Bows or 2
+local LE_ITEM_WEAPON_GUNS = LE_ITEM_WEAPON_GUNS or Enum.ItemWeaponSubclass.Guns or 3
+local LE_ITEM_WEAPON_MACE1H = LE_ITEM_WEAPON_MACE1H or Enum.ItemWeaponSubclass.Mace1H or 4
+local LE_ITEM_WEAPON_MACE2H = LE_ITEM_WEAPON_MACE2H or Enum.ItemWeaponSubclass.Mace2H or 5
+local LE_ITEM_WEAPON_POLEARM = LE_ITEM_WEAPON_POLEARM or Enum.ItemWeaponSubclass.Polearm or 6
+local LE_ITEM_WEAPON_SWORD1H = LE_ITEM_WEAPON_SWORD1H or Enum.ItemWeaponSubclass.Sword1H or 7
+local LE_ITEM_WEAPON_SWORD2H = LE_ITEM_WEAPON_SWORD2H or Enum.ItemWeaponSubclass.Sword2H or 8
+local LE_ITEM_WEAPON_WARGLAIVE = LE_ITEM_WEAPON_WARGLAIVE or Enum.ItemWeaponSubclass.Warglaive or 9
+local LE_ITEM_WEAPON_STAFF = LE_ITEM_WEAPON_STAFF or Enum.ItemWeaponSubclass.Staff or 10
+local LE_ITEM_WEAPON_EXOTIC1H = LE_ITEM_WEAPON_EXOTIC1H or Enum.ItemWeaponSubclass.Bearclaw or 11
+local LE_ITEM_WEAPON_EXOTIC2H = LE_ITEM_WEAPON_EXOTIC2H or Enum.ItemWeaponSubclass.Catclaw or 12
+local LE_ITEM_WEAPON_UNARMED = LE_ITEM_WEAPON_UNARMED or Enum.ItemWeaponSubclass.Unarmed or 13
+local LE_ITEM_WEAPON_GENERIC = LE_ITEM_WEAPON_GENERIC or Enum.ItemWeaponSubclass.Generic or 14
+local LE_ITEM_WEAPON_DAGGER = LE_ITEM_WEAPON_DAGGER or Enum.ItemWeaponSubclass.Dagger or 15
+local LE_ITEM_WEAPON_THROWN = LE_ITEM_WEAPON_THROWN or Enum.ItemWeaponSubclass.Thrown or 16
+local LE_ITEM_WEAPON_SPEAR = LE_ITEM_WEAPON_SPEAR or Enum.ItemWeaponSubclass.Obsolete3 or 17
+local LE_ITEM_WEAPON_CROSSBOW = LE_ITEM_WEAPON_CROSSBOW or Enum.ItemWeaponSubclass.Crossbow or 18
+local LE_ITEM_WEAPON_WAND = LE_ITEM_WEAPON_WAND or Enum.ItemWeaponSubclass.Wand or 19
+local LE_ITEM_WEAPON_FISHINGPOLE = LE_ITEM_WEAPON_FISHINGPOLE or Enum.ItemWeaponSubclass.Fishingpole or 20
 
 -----------------------------------------------------------------------------
 -- BoA armor tokens
@@ -144,7 +192,7 @@ local BoAArmorTokens = {
 local settingsAnchor;
 
 local CreateSettingsHeader = function(itemClassID)
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(18);
 
 	if (settingsAnchor) then
@@ -182,7 +230,7 @@ end
 
 local CreateTSMsettingsHeader = function(variable)
 
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(18);
 
 	if (settingsAnchor) then
@@ -197,9 +245,9 @@ local CreateTSMsettingsHeader = function(variable)
 	local label = frame:CreateFontString(nil, "BACKGROUND", "GameFontNormal");
 	label:SetPoint("TOP");
 	label:SetPoint("BOTTOM");
-	label:SetJustifyH("CENTER");	
+	label:SetJustifyH("CENTER");
 	label:SetText("TradeSkillMaster");
-		
+
 	local left = frame:CreateTexture(nil, "BACKGROUND");
 	left:SetHeight(8);
 	left:SetPoint("LEFT", 14, 0);
@@ -220,7 +268,7 @@ end
 
 
 local CreateSettingsEditBox = function(itemClassID, itemSubClassID, customText)
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(26);
 	frame:SetPoint("TOP", settingsAnchor, "BOTTOM", 0, 0);
 	frame:SetPoint("LEFT");
@@ -249,7 +297,7 @@ end
 
 local CreateTSMsettingsEditBox = function(TSMsetting, customText)
 
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(26);
 	frame:SetPoint("TOP", settingsAnchor, "BOTTOM", 0, 0);
 	frame:SetPoint("LEFT");
@@ -276,7 +324,7 @@ local CreateTSMsettingsEditBox = function(TSMsetting, customText)
 end
 
 local CreateSettingsCheckBox = function(valueID, customText)
-	local frame = CreateFrame("Frame", nil, addon.configFrame);
+	local frame = CreateFrame("Frame", nil, addon.configFrame, BackdropTemplateMixin and "BackdropTemplate");
 	frame:SetHeight(26);
 	frame:SetPoint("TOP", settingsAnchor, "BOTTOM", 0, 0);
 	frame:SetPoint("LEFT");
@@ -315,14 +363,14 @@ local UpdateSettings = function()
 	-- Fill edit box text with saved settings
 
 	for _, frame in pairs({ addon.configFrame:GetChildren() }) do
-		
+
 		if (frame.itemClassID and frame.itemSubClassID) then
 			frame.editbox:SetText(addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.itemClassID][frame.itemSubClassID] or "");
-			
+
 		elseif (frame.valueID) then
 			-- Checkbox
 			frame.checkbox:SetChecked(addon.ADB.recipients[S.myRealm][S.myFactionGroup][frame.valueID]);
-			
+
 		elseif (frame.TSMsetting) then
 			frame.editbox:SetText(addon.ADB.TSM[frame.TSMsetting] or "");
 		end
@@ -410,7 +458,7 @@ local CreateSettingsFrame = function()
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_SHIELD);
 	CreateSettingsEditBox(LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC, INVTYPE_HOLDABLE);
 
-	--TSM 
+	--TSM
 
 	CreateTSMsettingsHeader();
 	CreateSettingsCheckBox("TSMenabled", "Enable TSM filtering");
@@ -443,25 +491,25 @@ local SendButton_ShowTooltip = function(self)
 	if (addon.configFrame:IsVisible()) then
 		SaveSettings();
 	end
-	
-	local queue = addon:QueueMails(true);	
-	
+
+	local queue = addon:QueueMails(true);
+
 	local queue_size = 0
-	for _ in pairs(queue) do queue_size = queue_size + 1 end	
-	
+	for _ in pairs(queue) do queue_size = queue_size + 1 end
+
 	local TSMenabled = addon.ADB.recipients[S.myRealm][S.myFactionGroup].TSMenabled;
 	local TSMpricesource = addon.ADB.TSM.pricesource;
 	local TSMthreshold = tonumber(addon.ADB.TSM.threshold);
 	local TSMcheck = false;
 	local TSMerror = false;
-	
+
 	--Check if TSM options are set up properly
 	if TSMenabled then
-		if TSM_API then 					
+		if TSM_API then
 			-- Check if the set price source and threshold are valid. Only continue using TSM options if these options valid.
-			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then			
+			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then
 				TSMcheck = true;
-				
+
 				if (next(queue)) then
 					-- show tooltip
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -476,16 +524,16 @@ local SendButton_ShowTooltip = function(self)
 
 					GameTooltip:SetClampedToScreen(true);
 					GameTooltip:Show();
-				
+
 				elseif queue_size == 0 then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:AddLine("No items to be mailed.");
 					GameTooltip:SetClampedToScreen(true);
 					GameTooltip:Show();
-				else 
+				else
 					GameTooltip:Hide();
-				end	
-					
+				end
+
 			else
 				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 				GameTooltip:AddLine("ERROR: Invalid TSM price source and/or threshold.\nNo mail will be sent.");
@@ -501,9 +549,9 @@ local SendButton_ShowTooltip = function(self)
 			GameTooltip:AddLine("ERROR: TradeSkillMaster addon not detected. No mail will be sent.\nTo fix this, either disable TSM filtering in WardrobeTools settings, or enable TSM.");
 			GameTooltip:SetClampedToScreen(true);
 			GameTooltip:Show();
-		end		
-	
-	else	
+		end
+
+	else
 		if (next(queue)) then
 			-- show tooltip
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
@@ -518,16 +566,16 @@ local SendButton_ShowTooltip = function(self)
 
 			GameTooltip:SetClampedToScreen(true);
 			GameTooltip:Show();
-			
+
 		elseif queue_size == 0 then
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 			GameTooltip:AddLine("No items to be mailed.");
 			GameTooltip:SetClampedToScreen(true);
 			GameTooltip:Show();
-		else 
+		else
 			GameTooltip:Hide();
-		end		
-	end	
+		end
+	end
 end
 
 local ResizePostalButtons = function()
@@ -602,11 +650,11 @@ function GetItemPrice(itemID, customPriceStr)
 
    local _, link = GetItemInfo(itemID)
    local itemString = TSM_API.ToItemString(link)
-       
+
    if not TSM_API.IsCustomPriceValid(customPriceStr) then
       source = nil
    end
-   
+
    return TSM_API.GetCustomPriceValue(customPriceStr, itemString)
 end
 
@@ -717,32 +765,32 @@ local myNameFull = myName.."-"..strlower(gsub(S.myRealm, "%s", ""));
 --message(TSM_API.GetPriceSourceKeys())
 
 -- if TSM_API then
-	
+
 	-- --local _, link = GetItemInfo(4306)
 	-- --TSMvalue = GetItemPrice(link,"dbmarket");
-    
+
    -- --local itemString = TSM_API.ToItemString(link)
 
-	-- --itemString = TSM_API.ToItemString(itemLink)	
-	
+	-- --itemString = TSM_API.ToItemString(itemLink)
+
 	-- --TSMvalue = TSM_API.GetCustomPriceValue("DBMarket", itemString)
-	
+
 	-- --print(TSMvalue)
-	
+
 	-- --local pricef = ("% .2f"): format (value)
-	
+
 	-- --message(value)
 
 	-- -- if (value > 1) then
 		-- -- message("test")
 	-- -- end
-	
+
 	-- --print("WardrobeTools: TSM detected.")
 -- else
 	-- --print("WardrobeTools: TSM NOT DETECTED.")
 -- end
 
--- 
+--
 
 addon.queue = {};
 
@@ -759,12 +807,12 @@ addon.QueueMails = function(self, displayOnly)
 	-- Check if TSM options are set up properly
 	if TSMenabled then
 		--print("TSM enabled")
-		
+
 		-- Check if TSM addon is active
-		if TSM_API then 
-					
+		if TSM_API then
+
 			-- Check if the set price source and threshold are valid. Only continue using TSM options if these options valid.
-			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then			
+			if TSMpricesource and TSM_API.IsCustomPriceValid(TSMpricesource) and (type(TSMthreshold) == 'number') and TSMthreshold > 0 then
 				TSMcheck = true;
 			else
 				--print("WardrobeTools: Invalid TSM price source and/or threshold. No items will be sent.");
@@ -775,9 +823,9 @@ addon.QueueMails = function(self, displayOnly)
 			-- TSM addon not detected
 			TSMerror = true;
 			--print("WardrobeTools: TSM addon not detected. No items will be sent. Disable the TSM option in WardrobeTools settings, or enable the TSM addon.");
-		end		
+		end
 	end
-	
+
 	-- iterate through bags and build mailing queue
 
 		local bag, slot;
@@ -786,10 +834,10 @@ addon.QueueMails = function(self, displayOnly)
 				local itemID = GetContainerItemID(bag, slot);
 				local itemLink = GetContainerItemLink(bag, slot);
 				local TSMgreenlight = false;
-				
+
 				if (itemID and itemLink) then
 					local name, _, quality, _, _, _, _, _, equipSlot, _, _, itemClassID, itemSubClassID = GetItemInfo(itemID);
-					
+
 					if (name) then
 						if (includeBoAArmorTokens and string.find(name, "Unsullied")) then
 							itemSubClassID = BoAArmorTokens[itemID]
@@ -799,33 +847,33 @@ addon.QueueMails = function(self, displayOnly)
 						if (includeBoAArmorTokens and itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and BoAArmorTokens[itemID]) then
 							itemSubClassID = BoAArmorTokens[itemID];
 						end
-						
+
 						--Run TSM checks for the item
-						if TSMenabled then		
-						
+						if TSMenabled then
+
 							if TSMcheck then
-							
+
 								TSMvalue = (GetItemPrice(itemID,TSMpricesource) or nil);
-								
+
 								--Only greenlight the item to be mailed if TSMvalue is less than the set threshold.
 								if(TSMvalue and TSMthreshold and TSMvalue < TSMthreshold) then
-									TSMgreenlight = true;										
-								else	
+									TSMgreenlight = true;
+								else
 									TSMgreenlight = false;
-								end	
-							
+								end
+
 							else
 								TSMvalue = nil;
 								TSMgreenlight = false;
-							end		
-							
+							end
+
 						else
 							--If TSM options are disabled, greenlight ALL items to be mailed
 							TSMgreenlight = true;
-						end	
+						end
 
 						local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID] and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID]) or nil);
-						
+
 						if (TSMgreenlight and (not TSMerror) and quality >= 2 and quality ~= 7 and recipient and recipient ~= myName and recipient ~= myNameFull
 							and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
 							and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBoAArmorTokens)) then
@@ -858,11 +906,11 @@ addon.QueueMails = function(self, displayOnly)
 			return queue;
 		end
 	end
-	
+
 
 addon.ProcessQueue = function(self)
 	local recipient, items = next(self.queue);
-	
+
 	if (recipient) then
 		-- clear message
 		ClearSendMail();

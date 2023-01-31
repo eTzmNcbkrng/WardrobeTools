@@ -1,11 +1,11 @@
---[[ 
+--[[
 
 	Martin Karer / Sezz, 2016-2017
 	Wardrobe appearance collector for BoE items
 
 	Known issues:
 	- The API sometimes doesn't seem to know whether an appearance is collected or not, nothing I can do about that.
-	
+
 --]]
 
 local addonName, ns = ...;
@@ -25,7 +25,10 @@ local addon = S:CreateModule("AppearanceCollector", "SezzUIAppearanceCollector",
 local strlower, select, tonumber, strfind = string.lower, select, tonumber, string.find;
 
 -- WoW API/Constants
-local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink, InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo = GetContainerNumSlots, GetContainerItemID, GetContainerItemLink, InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo;
+local GetContainerItemID = GetContainerItemID or (C_Container and C_Container.GetContainerItemID)
+local GetContainerItemLink = GetContainerItemLink or (C_Container and C_Container.GetContainerItemLink)
+local GetContainerNumSlots = GetContainerNumSlots or (C_Container and C_Container.GetContainerNumSlots)
+local InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo = InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo;
 local SaveEquipmentSet, DeleteEquipmentSet, CreateEquipmentSet, UseEquipmentSet = C_EquipmentSet.SaveEquipmentSet, C_EquipmentSet.DeleteEquipmentSet, C_EquipmentSet.CreateEquipmentSet, C_EquipmentSet.UseEquipmentSet;
 local LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_WEAPON;
 local GameTooltip_Hide = GameTooltip_Hide;
@@ -198,10 +201,10 @@ addon.OnEnable = function(self)
 	-- Create button
 	if (not self:GetAttribute("type")) then
 		self:SetPoint(self.DB.anchor, self.DB.x, self.DB.y);
-		self:SetSize(64, 64);
+		self:SetSize(48, 48);
 		self:SetScript("OnEnter", ShowTooltip);
 		self:SetScript("OnLeave", GameTooltip_Hide);
-		self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+		self:RegisterForClicks("LeftButtonUp", "RightButtonUp", "LeftButtonDown", "RightButtonDown");
 		self:SetMovable(true);
 		self:RegisterForDrag("LeftButton");
 		self:EnableMouse(true);
@@ -277,7 +280,7 @@ addon.OnDisable = function(self)
 	DeleteAppearanceCollectorEquipmentSet();
 end
 
-addon.BindMouseWheel = function(self)	
+addon.BindMouseWheel = function(self)
 	--SetOverrideBindingClick(self, true, "MOUSEWHEELUP", self:GetName());
 	--SetOverrideBindingClick(self, true, "MOUSEWHEELDOWN", self:GetName());
 	return;
