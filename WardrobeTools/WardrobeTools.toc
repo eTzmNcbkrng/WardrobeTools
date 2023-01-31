@@ -3,7 +3,7 @@
 ## Notes: A simple addon to streamline transmog/appearance collection.
 ## SavedVariables: WardrobeToolsADB
 ## SavedVariablesPerCharacter: WardrobeToolsCDB
-## Version: 1.0.2
+## Version: @project-version@
 
 ## OptionalDeps: sUI
 ## X-SezzADB: WardrobeToolsADB

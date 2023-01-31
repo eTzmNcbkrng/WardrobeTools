@@ -1,0 +1,23 @@
+
+name: Package and release
+
+on:
+  workflow_run:
+    workflows: [Fully-Semi-Automaticated]
+    types: [completed]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+    
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Package and release
+        uses: BigWigsMods/packager@master
