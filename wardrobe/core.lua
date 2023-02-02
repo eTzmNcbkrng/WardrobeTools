@@ -287,7 +287,7 @@ elseif (S.myClass == "WARRIOR" or S.myClass == "PALADIN" or S.myClass == "DEATHK
 	classArmor = LE_ITEM_ARMOR_PLATE;
 elseif (S.myClass == "MAGE" or S.myClass == "PRIEST" or S.myClass == "WARLOCK") then
 	classArmor = LE_ITEM_ARMOR_CLOTH;
-elseif (S.myClass == "SHAMAN" or S.myClass == "HUNTER") then
+elseif (S.myClass == "SHAMAN" or S.myClass == "HUNTER" or S.myClass == "EVOKER") then
 	classArmor = LE_ITEM_ARMOR_MAIL;
 end
 
