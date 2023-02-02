@@ -28,9 +28,11 @@ local strlower, select, tonumber, strfind = string.lower, select, tonumber, stri
 local GetContainerItemID = GetContainerItemID or (C_Container and C_Container.GetContainerItemID)
 local GetContainerItemLink = GetContainerItemLink or (C_Container and C_Container.GetContainerItemLink)
 local GetContainerNumSlots = GetContainerNumSlots or (C_Container and C_Container.GetContainerNumSlots)
+local GetContainerItemInfo = GetContainerItemInfo or (C_Container and C_Container.GetContainerItemInfo)
 local InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo = InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo;
 local SaveEquipmentSet, DeleteEquipmentSet, CreateEquipmentSet, UseEquipmentSet = C_EquipmentSet.SaveEquipmentSet, C_EquipmentSet.DeleteEquipmentSet, C_EquipmentSet.CreateEquipmentSet, C_EquipmentSet.UseEquipmentSet;
-local LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_ARMOR, LE_ITEM_CLASS_WEAPON;
+local LE_ITEM_CLASS_ARMOR = LE_ITEM_CLASS_ARMOR or Enum.ItemClass.Armor or 4
+local LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON or Enum.ItemClass.Weapon or 2
 local GameTooltip_Hide = GameTooltip_Hide;
 
 -----------------------------------------------------------------------------
