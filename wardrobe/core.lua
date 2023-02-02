@@ -19,13 +19,6 @@
 			canBeSource (boolean)
 			noSourceReason (string, optional) - error code if canBeSource (from C_Transmog.GetItemInfo) is false
 
-	PlayerCanEquip(itemLink)
-		Returns if the player can equip an item.
-		NB: Fails for spec-requirements.
-
-		Return values:
-			canEquip (boolean)
-
 	IsBagItemTradable(containerID, slotID, allowBindOnAccount)
 		Returns if a item isn't soulbound
 		If allowBindOnAccount is true it treats BoA items like unbound BoE items
@@ -290,47 +283,6 @@ elseif (S.myClass == "MAGE" or S.myClass == "PRIEST" or S.myClass == "WARLOCK") 
 elseif (S.myClass == "SHAMAN" or S.myClass == "HUNTER" or S.myClass == "EVOKER") then
 	classArmor = LE_ITEM_ARMOR_MAIL;
 end
-
-local PlayerCanEquip = function(itemLink)
-	if (not classArmor) then return false; end
-
-	-- Level
-	local _, _, _, _, reqLevel, _, _, _, equipSlot, _, _, itemClassID, itemSubClassID = GetItemInfo(itemLink);
-	if (reqLevel > S.myLevel) then return false; end
-
-	-- Armor type
-	if (itemClassID == LE_ITEM_CLASS_ARMOR and (equipSlot ~= "INVTYPE_CLOAK") and (itemSubClassID == LE_ITEM_ARMOR_CLOTH or itemSubClassID == LE_ITEM_ARMOR_LEATHER or itemSubClassID == LE_ITEM_ARMOR_PLATE or itemSubClassID == LE_ITEM_ARMOR_MAIL) and itemSubClassID ~= classArmor) then return false; end
-
-	-- Scan tooltip for other restrictions
-	local textL, textR;
-
-	tooltip:SetHyperlink(itemLink);
-	for i = tooltip:NumLines(), 1, -1 do
-		-- Left: Class/Race/...
-		textL = tooltip.L[i];
-		if (textL) then
-			local r, g, b = _G[tooltipName.."TextLeft"..i]:GetTextColor();
-			if (r > 0.99 and floor(g * 1000) == 125 and floor(b * 1000) == 125 and not strmatch(textL, durabilityPattern) and not strmatch(textL, reqLevelPattern)) then
-				return false;
-			end
-		end
-
-		-- Right: Weapon/Armor type
-		if (itemClassID == LE_ITEM_CLASS_WEAPON or itemClassID == LE_ITEM_CLASS_ARMOR) then
-			textR = tooltip.R[i];
-			if (textR) then
-				local r, g, b = _G[tooltipName.."TextRight"..i]:GetTextColor();
-				if (r > 0.99 and floor(g * 1000) == 125 and floor(b * 1000) == 125 and not strmatch(textR, durabilityPattern)) then
-					return false;
-				end
-			end
-		end
-	end
-
-	return true;
-end
-
-S.PlayerCanEquip = PlayerCanEquip;
 
 -----------------------------------------------------------------------------
 
