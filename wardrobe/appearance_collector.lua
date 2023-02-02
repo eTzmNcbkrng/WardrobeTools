@@ -31,7 +31,6 @@ local GetContainerNumSlots = GetContainerNumSlots or (C_Container and C_Containe
 local GetContainerItemInfo = GetContainerItemInfo or (C_Container and C_Container.GetContainerItemInfo)
 local InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo = InCombatLockdown, SetOverrideBindingClick, ClearOverrideBindings, GetItemInfo;
 local SaveEquipmentSet, DeleteEquipmentSet, CreateEquipmentSet, UseEquipmentSet = C_EquipmentSet.SaveEquipmentSet, C_EquipmentSet.DeleteEquipmentSet, C_EquipmentSet.CreateEquipmentSet, C_EquipmentSet.UseEquipmentSet;
-local IsEquippableItem = IsEquippableItem
 local LE_ITEM_CLASS_ARMOR = LE_ITEM_CLASS_ARMOR or Enum.ItemClass.Armor or 4
 local LE_ITEM_CLASS_WEAPON = LE_ITEM_CLASS_WEAPON or Enum.ItemClass.Weapon or 2
 local GameTooltip_Hide = GameTooltip_Hide;
@@ -51,7 +50,7 @@ local GetNextItem = function()
 		for slot = 1, GetContainerNumSlots(bag) do
 			local link = GetContainerItemLink(bag, slot);
 
-			if (link and S.ItemIsValidTransmogrifySource(link) and not select(2, S.PlayerHasTransmog(link)) and S.IsBagItemTradable(bag, slot) and IsEquippableItem(link)) then
+			if (link and S.ItemIsValidTransmogrifySource(link) and not select(2, S.PlayerHasTransmog(link)) and S.IsBagItemTradable(bag, slot) and S.PlayerCanEquip(link)) then
 				local _, _, _, _, reqLevel, _, _, _, equipSlot, _, _, itemClassID = GetItemInfo(link);
 				if ((itemClassID == LE_ITEM_CLASS_ARMOR or itemClassID == LE_ITEM_CLASS_WEAPON) and (not reqLevel or (reqLevel == 0 and equipSlot == "INVTYPE_BODY") or (reqLevel > 0 and reqLevel <= S.myLevel))) then
 					return bag, slot, equipSlot;
@@ -145,7 +144,7 @@ end
 
 addon.CHAT_MSG_LOOT = function(self, event, message)
 	local link = select(3, strfind(message, lootPattern)) or select(3, strfind(message, receivePattern));
-	if (link and not self.enabledState and S.ItemIsValidTransmogrifySource(link) and not select(2, S.PlayerHasTransmog(link)) and S.IsItemTradable(link) and IsEquippableItem(link)) then
+	if (link and not self.enabledState and S.ItemIsValidTransmogrifySource(link) and not select(2, S.PlayerHasTransmog(link)) and S.IsItemTradable(link) and S.PlayerCanEquip(link)) then
 		if (InCombatLockdown()) then
 			showAfterCombat = true;
 		else
