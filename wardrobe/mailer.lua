@@ -874,7 +874,7 @@ addon.QueueMails = function(self, displayOnly)
 
 						local recipient = (itemClassID and itemSubClassID and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID] and self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID] and strlower(self.ADB.recipients[S.myRealm][S.myFactionGroup][itemClassID][itemSubClassID]) or nil);
 
-						if (TSMgreenlight and (not TSMerror) and quality >= 2 and quality ~= 7 and recipient and recipient ~= myName and recipient ~= myNameFull
+						if (TSMgreenlight and (not TSMerror) and quality ~= 7 and recipient and recipient ~= myName and recipient ~= myNameFull
 							and (not (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC) or (itemClassID == LE_ITEM_CLASS_ARMOR and itemSubClassID == LE_ITEM_ARMOR_GENERIC and equipSlot == "INVTYPE_HOLDABLE"))
 							and (not S.PlayerHasTransmog(itemLink) or sendAllBoEs) and S.IsBagItemTradable(bag, slot, includeBoAArmorTokens)) then
 							-- LE_ITEM_CLASS_ARMOR, LE_ITEM_ARMOR_GENERIC is used for offhands and jewelery and propably more, filtering it by using INVTYPE_HOLDABLE
